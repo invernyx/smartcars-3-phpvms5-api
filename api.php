@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 define('API', true);
 header('Content-type: application/json');
 
@@ -7,11 +11,11 @@ $request = explode('/', $var[0]);
 
 if($request[0] == '')
 {
-    array_splice($request, 0, 1);        
+    array_splice($request, 0, 1);
 }
 while(count($request) > 0 && (strtolower($request[0]) == 'smartcars' || strtolower($request[0]) == 'api'))
 {
-    array_splice($request, 0, 1);        
+    array_splice($request, 0, 1);
 }
     
 function assertData($source, $data)
@@ -29,7 +33,7 @@ function assertData($source, $data)
                 case 'number':
                     if(is_numeric($source[$dataname]))
                         $valid = true;
-                    break;                              
+                    break;
                 default:
                     $valid = true;
             }
@@ -54,8 +58,7 @@ function assertData($source, $data)
                 $msg .= ', ' . $invdata;
         }
         http_response_code(400);
-        echo(json_encode(array('message'=>$msg)));        
-        
+        echo(json_encode(array('message'=>$msg)));
         exit;
     }
 }
@@ -71,6 +74,29 @@ if(count($request) > 0)
     }
 
     //eventually, validate the list
+    //if valid, create db handler
+    require('resources/database.php');
+    $database = null;
+    require_once('handlers/' . $request[0] . '/environment.php');
+    try
+    {
+        $database = new database(dbName, dbHost, dbUsername, dbPassword);
+    }
+    catch (Exception $e) {}
+
+    if ($database == null)
+    {
+        http_response_code(400);
+        echo(json_encode(array('message'=>'Database credentials were not able to be loaded')));
+        exit;
+    }
+
+    if (count($request) == 1)
+    {
+        echo(json_encode(array('version'=>sC3Version)));
+        exit;
+    }
+        
     require('handlers/' . $str . '.php');
 }
 else
