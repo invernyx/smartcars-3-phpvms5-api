@@ -1,0 +1,100 @@
+<?php
+if(!defined('API'))
+    exit;
+
+$database->createTable('smartCARS3Sessions','id int(16) AUTO_INCREMENT, dbID int(16), sessionID varchar(64), timestamp int(16), PRIMARY KEY(id)');
+$database->execute('DELETE FROM smartCARS3Sessions WHERE timestamp < ?',array(time() - 2592000));
+
+function attemptLogin($results, $loginData, $passwordRequired = true) {
+    global $database;
+    $return = array();
+    if ($results != array()) {
+        if (!fetchRetiredPilots) {
+            if ($results['retired'] != '0') {
+                $return['result'] = 'inactive';
+                return $return;
+            }
+        }
+        if ($results['confirmed'] == '0') {
+            $return['result'] = 'unconfirmed';
+            return $return;
+        }
+        if ($passwordRequired == true) {
+            $md5Hash = md5($loginData['password'] . $results['salt']);
+            if ($md5Hash != $results['password']) {
+                $return['result'] = 'incorrectPassword';
+                return $return;
+            }
+            $results['sessionID'] = uniqid('', true);
+            $results['sessionID'] .= uniqid('', true);
+            $results['sessionID'] .= uniqid('', true);
+            $database->execute('INSERT INTO smartCARS3Sessions (dbID, sessionID, timestamp) VALUES (?, ?, ?)',array($results['pilotid'],$results['sessionID'],time()));
+        }
+        else {
+            $query = $database->fetch('SELECT * FROM smartCARS3Sessions WHERE sessionID = ?',array($loginData['sessionID']));
+            if ($query == array()) {
+                $return['result'] = 'invalid';
+                return $return;
+            }
+        }
+        $results['result'] = 'ok';
+        return $results;
+    } else {
+        $return['result'] = 'notFound';
+        return $return;
+    }
+}
+
+function generateJSON($data, $sessionProvided = false) {
+    if ($data['result'] != 'ok') {
+        switch($data['result']) {
+            case 'unconfirmed':
+                http_response_code(404);
+                echo(json_encode(array('message'=>'Pilot not confirmed')));
+                break;
+            case 'notFound':
+                http_response_code(404);
+                echo(json_encode(array('message'=>'Pilot not found')));
+                break;
+            case 'incorrectPassword':
+                http_response_code(403);
+                echo(json_encode(array('message'=>'Incorrect password given')));
+                break;
+            case 'invalid':
+                http_response_code(403);
+                echo(json_encode(array('message'=>'Incorrect session given')));
+                break;
+        }
+    } else {
+        $pilotID = '';
+        for($i = strlen($data['pilotid']); $i < pilotIDLength; $i++)
+            $pilotID .= '0';
+        $pilotID .= $data['pilotid'];
+        $return = array('dbID'=>$data['pilotid'], 'airlineCode'=>$data['code'], 'pilotID'=>$pilotID, 'firstName'=>$data['firstname'], 'lastName'=>$data['lastname'], 'email'=>$data['email'], 'rank'=>$data['rank']);
+        if ($sessionProvided == true)
+            $return['sessionID'] = $data['sessionID'];
+        echo(json_encode($return));
+    }
+}
+
+if (isset($_POST['password'])) {
+    if (strpos($_GET['id'], '@')) {
+        $results = $database->fetch('SELECT * FROM ' . dbPrefix . 'pilots WHERE email=?',array($_GET['id']));
+    } else {
+        $results = $database->fetch('SELECT * FROM ' . dbPrefix . 'pilots WHERE pilotid=?',array($_GET['id']));
+    }
+    $results = $results[0];
+    generateJSON(attemptLogin($results, array('password'=>$_POST['password'])));
+}
+else {
+    if (strpos($_GET['id'], '@')) {
+        $results = $database->fetch('SELECT * FROM ' . dbPrefix . 'pilots WHERE email=?',array($_GET['id']));
+    } else {
+        $results = $database->fetch('SELECT * FROM ' . dbPrefix . 'pilots WHERE pilotid=?',array($_GET['id']));
+    }
+    $results = $results[0];
+
+    if ($results != array())
+        generateJSON(attemptLogin($results, array('sessionID'=>$_GET['sessionID']), false));
+}
+?>

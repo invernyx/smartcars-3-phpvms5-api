@@ -2,6 +2,11 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+if (!function_exists(http_response_code)) {
+    function http_response_code($code) {
+        header('X-PHP-Response-Code: ' . $code, true, $code);
+    }
+}
 
 define('API', true);
 header('Content-type: application/json');

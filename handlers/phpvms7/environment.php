@@ -15,5 +15,5 @@ define('dbHost', $config['host']);
 define('dbUsername', $config['username']);
 define('dbPassword', $config['password']);
 define('dbPrefix', $config['prefix']);
-define('sC3Version', 'phpVMS 7 Handler 0.0.0.1');
+define('sC3Version', 'phpVMS 7 Handler 0.0.1');
 ?>

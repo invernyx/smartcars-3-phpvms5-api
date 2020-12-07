@@ -2,7 +2,8 @@
 if(!defined('API'))
     exit;
 
-$results = $database->fetch('SELECT * FROM ' . dbPrefix . 'pilots WHERE pilotid=?',array($_GET['uid']));
-$results = $results[0];
-echo(json_encode($results));
+if ($request[1] == 'statistics')
+    require_once('pilots/statistics.php');
+else if ($request[1] == 'login')
+    require_once('pilots/login.php');
 ?>

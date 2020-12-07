@@ -7,5 +7,7 @@ define('dbHost', DBASE_SERVER);
 define('dbUsername', DBASE_USER);
 define('dbPassword', DBASE_PASS);
 define('dbPrefix', TABLE_PREFIX);
-define('sC3Version', 'phpVMS 5 Handler 0.0.0.1');
+define('pilotOffset', PILOTID_OFFSET);
+define('pilotIDLength', PILOTID_LENGTH);
+define('sC3Version', 'phpVMS 5 Handler 0.0.1');
 ?>
