@@ -25,13 +25,13 @@ function attemptLogin($results, $loginData, $passwordRequired = true) {
                 $return['result'] = 'incorrectPassword';
                 return $return;
             }
-            $results['sessionID'] = uniqid('', true);
-            $results['sessionID'] .= uniqid('', true);
-            $results['sessionID'] .= uniqid('', true);
-            $database->execute('INSERT INTO smartCARS3Sessions (dbID, sessionID, timestamp) VALUES (?, ?, ?)',array($results['pilotid'],$results['sessionID'],time()));
+            $results['session'] = uniqid('', true);
+            $results['session'] .= uniqid('', true);
+            $results['session'] .= uniqid('', true);
+            $database->execute('INSERT INTO smartCARS3Sessions (dbID, sessionID, timestamp) VALUES (?, ?, ?)',array($results['pilotid'],$results['session'],time()));
         }
         else {
-            $query = $database->fetch('SELECT * FROM smartCARS3Sessions WHERE sessionID = ?',array($loginData['sessionID']));
+            $query = $database->fetch('SELECT * FROM smartCARS3Sessions WHERE sessionID = ?',array($loginData['session']));
             if ($query == array()) {
                 $return['result'] = 'invalid';
                 return $return;
@@ -45,11 +45,11 @@ function attemptLogin($results, $loginData, $passwordRequired = true) {
     }
 }
 
-function generateJSON($data, $sessionProvided = false) {
+function generateJSON($data, $sessionNeeded = false) {
     if ($data['result'] != 'ok') {
         switch($data['result']) {
             case 'unconfirmed':
-                http_response_code(404);
+                http_response_code(409);
                 echo(json_encode(array('message'=>'Pilot not confirmed')));
                 break;
             case 'notFound':
@@ -71,8 +71,8 @@ function generateJSON($data, $sessionProvided = false) {
             $pilotID .= '0';
         $pilotID .= $data['pilotid'];
         $return = array('dbID'=>$data['pilotid'], 'airlineCode'=>$data['code'], 'pilotID'=>$pilotID, 'firstName'=>$data['firstname'], 'lastName'=>$data['lastname'], 'email'=>$data['email'], 'rank'=>$data['rank']);
-        if ($sessionProvided == true)
-            $return['sessionID'] = $data['sessionID'];
+        if ($sessionNeeded == true)
+            $return['session'] = $data['session'];
         echo(json_encode($return));
     }
 }
@@ -84,7 +84,8 @@ if (isset($_POST['password'])) {
         $results = $database->fetch('SELECT * FROM ' . dbPrefix . 'pilots WHERE pilotid=?',array($_GET['id']));
     }
     $results = $results[0];
-    generateJSON(attemptLogin($results, array('password'=>$_POST['password'])));
+
+    generateJSON(attemptLogin($results, array('password'=>$_POST['password'])), true);
 }
 else {
     if (strpos($_GET['id'], '@')) {
@@ -95,6 +96,6 @@ else {
     $results = $results[0];
 
     if ($results != array())
-        generateJSON(attemptLogin($results, array('sessionID'=>$_GET['sessionID']), false));
+        generateJSON(attemptLogin($results, array('session'=>$_POST['session']), false));
 }
 ?>

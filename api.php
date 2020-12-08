@@ -68,6 +68,24 @@ function assertData($source, $data)
     }
 }
 
+function authenticate($headers) {
+    global $database;
+    $header = explode(':', $headers);
+    if (sizeof($header) > 1) {
+        http_response_code(400);
+        echo(json_encode(array('message'=>'Bad headers provided')));
+        exit;
+    }
+    $dbid = $header[0];
+    $session = $header[1];
+    if ($database->fetch('SELECT * FROM smartCARS3Sessions WHERE dbID=? AND sessionID=?', array($dbid, $session)) != array()) {
+        return true;
+    }
+    http_response_code(401);
+    echo(json_encode(array('message'=>'Login information incorrect')));
+    exit;
+}
+
 if(count($request) > 0)
 {
     $str = "";
