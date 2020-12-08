@@ -82,7 +82,7 @@ function authenticate($headers) {
         return true;
     }
     http_response_code(401);
-    echo(json_encode(array('message'=>'Login information incorrect')));
+    echo(json_encode(array('message'=>'Invalid session')));
     exit;
 }
 
