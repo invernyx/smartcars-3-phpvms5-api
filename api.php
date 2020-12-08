@@ -95,9 +95,7 @@ if(count($request) > 0)
             $str .= "/";
         $str .= $req;
     }
-
-    //eventually, validate the list
-    //if valid, create db handler
+    
     require('resources/database.php');
     $database = null;
     require_once('handlers/' . $request[0] . '/environment.php');
@@ -120,6 +118,11 @@ if(count($request) > 0)
         exit;
     }
         
+    if(count($request) < 2 || strtolower($request[0]) != "pilot" || strtolower($request[1]) != "login")
+    {
+        //authenticate($_SERVER['HTTP_AUTHORIZATION']); //uncomment to restrict access
+    }
+
     require('handlers/' . $str . '.php');
 }
 else
