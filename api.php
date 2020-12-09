@@ -22,6 +22,14 @@ while(count($request) > 0 && (strtolower($request[0]) == 'smartcars' || strtolow
 {
     array_splice($request, 0, 1);
 }
+
+function errorOut($code, $msg, $shouldExit = true)
+{
+    http_response_code($code);
+    echo(json_encode(array('message'=>$msg)));
+    if($shouldExit == true)
+        exit;
+}
     
 function assertData($source, $data)
 {
@@ -62,28 +70,24 @@ function assertData($source, $data)
             else
                 $msg .= ', ' . $invdata;
         }
-        http_response_code(400);
-        echo(json_encode(array('message'=>$msg)));
-        exit;
+        
+        errorOut(400, $msg);
     }
 }
 
 function authenticate($headers) {
     global $database;
     $header = explode(':', $headers);
-    if (sizeof($header) > 1) {
-        http_response_code(400);
-        echo(json_encode(array('message'=>'Bad headers provided')));
-        exit;
-    }
+    if (sizeof($header) > 1)    
+        errorOut(400, 'Bad headers provided');        
+    
     $dbid = $header[0];
     $session = $header[1];
     if ($database->fetch('SELECT * FROM smartCARS3Sessions WHERE dbID=? AND sessionID=?', array($dbid, $session)) != array()) {
         return true;
     }
-    http_response_code(401);
-    echo(json_encode(array('message'=>'Invalid session')));
-    exit;
+
+    errorOut(401, 'Invalid session');    
 }
 
 if(count($request) > 0)
@@ -107,9 +111,7 @@ if(count($request) > 0)
 
     if ($database == null)
     {
-        http_response_code(400);
-        echo(json_encode(array('message'=>'Database credentials were not able to be loaded')));
-        exit;
+        errorOut(400, 'Database credentials were not able to be loaded');        
     }
 
     if (count($request) == 1)
@@ -118,9 +120,12 @@ if(count($request) > 0)
         exit;
     }
         
+    $dbID = '';
     if(count($request) < 2 || strtolower($request[0]) != "pilot" || strtolower($request[1]) != "login")
     {
         //authenticate($_SERVER['HTTP_AUTHORIZATION']); //uncomment to restrict access
+        $dbIDspl = explode(':', $_SERVER['HTTP_AUTHORIZATION']);
+        $dbID = $dbIDspl[0];
     }
 
     require('handlers/' . $str . '.php');

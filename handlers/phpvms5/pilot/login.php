@@ -49,20 +49,16 @@ function generateJSON($data, $sessionNeeded = false) {
     if ($data['result'] != 'ok') {
         switch($data['result']) {
             case 'unconfirmed':
-                http_response_code(409);
-                echo(json_encode(array('message'=>'Pilot not confirmed')));
+                errorOut(409,'Pilot not confirmed');
                 break;
             case 'notFound':
-                http_response_code(404);
-                echo(json_encode(array('message'=>'Pilot not found')));
+                errorOut(404,'Pilot not found');
                 break;
             case 'incorrectPassword':
-                http_response_code(403);
-                echo(json_encode(array('message'=>'Incorrect password given')));
+                errorOut(403,'Incorrect password given');
                 break;
             case 'invalid':
-                http_response_code(403);
-                echo(json_encode(array('message'=>'Incorrect session given')));
+                errorOut(403,'Incorrect session given');
                 break;
         }
     } else {
