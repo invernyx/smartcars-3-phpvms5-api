@@ -19,11 +19,7 @@ $airline = $database->fetch('SELECT * FROM ' . dbPrefix . 'airlines WHERE code=?
 if ($airline == array()) {
     $query = $database->execute('INSERT INTO ' . dbPrefix .'airlines (id, code, name, enabled) VALUES (NULL, ?, "Charter", 0)',array($code));
     if ($query == null)
-    {
-        http_response_code(500);
-        echo(json_encode(array('message'=>"Unable to create charter airline")));
-        exit;
-    }
+        errorOut(500,'Unable to create charter airline');
 }
 
 $database->createTable('smartCARS3_CharterFlights','scheduleID int, bidID int, dbID int, PRIMARY KEY (scheduleID)');
