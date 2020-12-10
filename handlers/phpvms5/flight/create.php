@@ -2,6 +2,11 @@
 if(!defined('API'))
     exit;
 
+assertData(
+    array('number' => 'number', 'departure' => 'string', 'arrival' => 'string', 'route' => 'string', 'aircraft' => 'string', 'cruise' => 'number', 'distance' => 'number', 'departureTime' => 'string', 'departuretime' => 'string', 'arrivalTime' => 'string', 'flightTime' => 'string', 'ticketPrice' => 'number', 'lat' => 'string', 'long' => 'string', 'heading' => 'number', 'altitude' => 'number', 'network' => 'string'),
+    $_POST
+);
+
 if (isset($_POST['flightType']) && $_POST['flightType'] == 'C')
     $type = 'C';
 else
