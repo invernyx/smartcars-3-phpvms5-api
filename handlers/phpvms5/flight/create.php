@@ -2,6 +2,11 @@
 if(!defined('API'))
     exit;
 
+assertData(
+    $_POST,
+    array('number' => 'number', 'departure' => 'string', 'arrival' => 'string', 'route' => 'string', 'aircraft' => 'string', 'cruise' => 'number', 'distance' => 'number', 'departureTime' => 'string', 'departuretime' => 'string', 'arrivalTime' => 'string', 'flightTime' => 'string', 'lat' => 'string', 'long' => 'string', 'heading' => 'number', 'altitude' => 'number', 'network' => 'string')    
+);
+
 if (isset($_POST['flightType']) && $_POST['flightType'] == 'C')
     $type = 'C';
 else
@@ -11,6 +16,11 @@ if (isset($_POST['code']) && $_POST['code'] == '')
     $code = $_POST['code'];
 else
     $code = 'SCC';
+
+if (isset($_POST['ticketPrice']))
+    $ticketPrice = $_POST['ticketPrice'];
+else
+    $ticketPrice = 0;
 
 $airline = $database->fetch('SELECT * FROM ' . dbPrefix . 'airlines WHERE code=?',array($code));
 if ($airline == array()) {
@@ -32,7 +42,7 @@ $params = array(
     $_POST['departureTime'],
     $_POST['arrivalTime'],
     $_POST['flightTime'],
-    $_POST['ticketPrice'],
+    $ticketPrice,
     $type
 );
 if ($database->execute('INSERT INTO ' . dbPrefix . 'schedules (id, code, flightnum, depicao, arricao, route, aircraft, flightlevel, distance, deptime, arrtime, flighttime, price, flighttype, enabled) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)',$params) != true)
@@ -80,5 +90,5 @@ $bidID = $database->getLastInsertID();
 $charterQuery = $database->execute('INSERT INTO smartCARS3_CharterFlights (scheduleID, bidID, dbID) VALUES (?, ?, ?)',array($scheduleID, $bidID, $dbID));
 if ($charterQuery != true)
     errorOut(500,'Unable to create charter flight');
-echo(json_encode(array('success'=>($charterQuery && $acarsQuery),'instanceID'=>$instanceID)));
+echo(json_encode(array('instanceID'=>$instanceID)));
 ?>
