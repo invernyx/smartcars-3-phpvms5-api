@@ -85,5 +85,5 @@ $bidID = $database->getLastInsertID();
 $charterQuery = $database->execute('INSERT INTO smartCARS3_CharterFlights (scheduleID, bidID, dbID) VALUES (?, ?, ?)',array($scheduleID, $bidID, $dbID));
 if ($charterQuery != true)
     errorOut(500,'Unable to create charter flight');
-echo(json_encode(array('success'=>($charterQuery && $acarsQuery),'instanceID'=>$instanceID)));
+echo(json_encode(array('instanceID'=>$instanceID)));
 ?>
