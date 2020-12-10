@@ -3,8 +3,8 @@ if(!defined('API'))
     exit;
 
 assertData(
-    array('number' => 'number', 'departure' => 'string', 'arrival' => 'string', 'route' => 'string', 'aircraft' => 'string', 'cruise' => 'number', 'distance' => 'number', 'departureTime' => 'string', 'departuretime' => 'string', 'arrivalTime' => 'string', 'flightTime' => 'string', 'ticketPrice' => 'number', 'lat' => 'string', 'long' => 'string', 'heading' => 'number', 'altitude' => 'number', 'network' => 'string'),
-    $_POST
+    $_POST,
+    array('number' => 'number', 'departure' => 'string', 'arrival' => 'string', 'route' => 'string', 'aircraft' => 'string', 'cruise' => 'number', 'distance' => 'number', 'departureTime' => 'string', 'departuretime' => 'string', 'arrivalTime' => 'string', 'flightTime' => 'string', 'lat' => 'string', 'long' => 'string', 'heading' => 'number', 'altitude' => 'number', 'network' => 'string')    
 );
 
 if (isset($_POST['flightType']) && $_POST['flightType'] == 'C')
@@ -16,6 +16,11 @@ if (isset($_POST['code']) && $_POST['code'] == '')
     $code = $_POST['code'];
 else
     $code = 'SCC';
+
+if (isset($_POST['ticketPrice']))
+    $ticketPrice = $_POST['ticketPrice'];
+else
+    $ticketPrice = 0;
 
 $airline = $database->fetch('SELECT * FROM ' . dbPrefix . 'airlines WHERE code=?',array($code));
 if ($airline == array()) {
@@ -37,7 +42,7 @@ $params = array(
     $_POST['departureTime'],
     $_POST['arrivalTime'],
     $_POST['flightTime'],
-    $_POST['ticketPrice'],
+    $ticketPrice,
     $type
 );
 if ($database->execute('INSERT INTO ' . dbPrefix . 'schedules (id, code, flightnum, depicao, arricao, route, aircraft, flightlevel, distance, deptime, arrtime, flighttime, price, flighttype, enabled) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)',$params) != true)
