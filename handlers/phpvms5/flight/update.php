@@ -7,7 +7,7 @@ require_once("../core/common/ACARSData.class.php");
 
 assertData(
     $_POST,
-    array('instance' => 'number', 'latitude' => 'string', 'longitude' => 'string', 'magneticheading' => 'number', 'trueheading' => 'number', 'altitude' => 'number', 'groundspeed' => 'number', 'phase' => 'string', 'departuretime' => 'string', 'arrivaltime' => 'string', 'distanceremaining' => 'number', 'timeremaining' => 'string')    
+    array('instance' => 'number', 'latitude' => 'string', 'longitude' => 'string', 'heading' => 'number', 'altitude' => 'number', 'groundspeed' => 'number', 'phase' => 'string', 'departuretime' => 'string', 'arrivaltime' => 'string', 'distanceremaining' => 'number', 'timeremaining' => 'string')    
 );
 
 $pilot = $database->fetch('SELECT * FROM ' . dbPrefix . 'pilots WHERE pilotid = ?', array($dbID));
@@ -32,6 +32,7 @@ if(!empty($pilot))
 
         $flight['lat'] = $lat;
         $flight['lng'] = $lon;
+        $flight['heading'] = $_POST['heading'];
         $flight['alt'] = $_POST['altitude'];
         $flight['gs'] = $_POST['groundspeed'];
         $flight['heading'] = $_POST['trueheading'];
@@ -41,6 +42,9 @@ if(!empty($pilot))
         $flight['distremain'] = $_POST['distanceremaining'];
         $flight['timeremaining'] = $_POST['timeremaining'];
 
+        if(isset($_POST['route']))
+            $flight['route'] = $_POST['route'];
+
         if(!ACARSData::UpdateFlightData($dbID, $flight))
             errorOut(500, 'ACARSData::UpdateFlightData failed');    
     }
@@ -48,5 +52,5 @@ if(!empty($pilot))
         errorOut(404, 'Flight instance not found');
 }
 else
-    errorOut(404, 'Pilot data not found');
+    errorOut(404, 'Pilot not found');
 ?>
