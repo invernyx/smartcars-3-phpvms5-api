@@ -1,4 +1,7 @@
 <?php
+if(!defined('API'))
+    exit;
+
 assertData($_GET, array('id'=>'number'));
 
 $PIREP = $database->fetch('SELECT flighttime as flightTime, landingrate as landingRate, fuelused as fuelUsed, accepted, log FROM ' . dbPrefix . 'pireps WHERE pirepid=?',array($_GET['id']));

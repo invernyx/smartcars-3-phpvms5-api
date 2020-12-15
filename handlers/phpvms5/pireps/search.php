@@ -1,4 +1,7 @@
 <?php
+if(!defined('API'))
+    exit;
+    
 $query = 'SELECT pirepid as pirepID, code, submitdate as submitDate, flightnum as flightNum, depicao as departure, arricao as arrival, aircraft FROM ' . dbPrefix . 'pireps WHERE pilotid = :pilotid';
 $args = array();
 $args[':pilotid'] = $dbID;
