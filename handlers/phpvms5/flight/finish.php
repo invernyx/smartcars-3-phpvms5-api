@@ -7,22 +7,19 @@ require_once('../core/common/ACARSData.class.php');
 
 assertData(
     $_POST,
-    array('instance'=>'number','bidID'=>'number','load'=>'number','flightTime'=>'string','landingRate'=>'number','fuelUsed'=>'number','log'=>'string')    
+    array('instanceID'=>'number','bidID'=>'number','load'=>'number','flightTime'=>'string','landingRate'=>'number','fuelUsed'=>'number','log'=>'string')    
 );
 
-$bidCheck = $database->fetch('SELECT bidid FROM ' . dbPrefix . 'bids WHERE bidid=?',array($_POST['bidID']));
-if ($bidCheck == array())
-    errorOut(404,'Bid not found');
+$check = $database->fetch('SELECT id FROM ' . dbPrefix . 'acarsdata WHERE id=?',array($_POST['instanceID']));
+if ($check == array())
+    errorOut(404,'instanceID not found');
+$check = $database->fetch('SELECT bidid FROM ' . dbPrefix . 'bids WHERE bidid=?',array($_POST['bidID']));
+if ($check == array())
+    errorOut(404,'bidID not found');
     
-$flight = $database->fetch('SELECT * FROM ' . dbPrefix . 'acarsdata WHERE id=?',array($_POST['instance']));
+$flight = $database->fetch('SELECT * FROM ' . dbPrefix . 'acarsdata WHERE id=?',array($_POST['instanceID']));
 if ($flight == null)
-    errorOut(500, 'Unable to locate flight');
-
-$flight = $flight[0];
-if (isset($_POST['code']))
-    $flight['code'] = $_POST['code'];
-else
-    $flight['code'] = 'SCC';
+    errorOut(500, 'Unable to search for flight');
 
 $data = array(
     'pilotid' => $dbID,
@@ -48,7 +45,7 @@ else
 $return = ACARSData::FilePirep($dbID, $data);
 
 if ($return == false)
-    errorOut(500,'Unable to file PIREP');
+    errorOut(500,'PIREP filing failed');
 
 $success = true;
 $query = $database->fetch('SELECT * FROM smartCARS3_CharterFlights WHERE bidID=? AND dbID=?',array($_POST['bidID'],$dbID));
@@ -67,6 +64,4 @@ if (!$database->execute('DELETE FROM ' . dbPrefix . 'bids WHERE pilotid=? AND bi
 
 if ($success != true)
     errorOut(500, $success . ' failed');
-else
-    echo(json_encode(array('success'=>true)));
 ?>

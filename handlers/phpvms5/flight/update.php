@@ -7,14 +7,14 @@ require_once('../core/common/ACARSData.class.php');
 
 assertData(
     $_POST,
-    array('instance' => 'number', 'latitude' => 'string', 'longitude' => 'string', 'heading' => 'number', 'altitude' => 'number', 'groundspeed' => 'number', 'phase' => 'string', 'departuretime' => 'string', 'arrivaltime' => 'string', 'distanceremaining' => 'number', 'timeremaining' => 'string')    
+    array('instanceID' => 'number', 'latitude' => 'string', 'longitude' => 'string', 'heading' => 'number', 'altitude' => 'number', 'groundSpeed' => 'number', 'phase' => 'string', 'departureTime' => 'string', 'arrivalTime' => 'string', 'distanceRemaining' => 'number', 'timeRemaining' => 'string')    
 );
 
 $pilot = $database->fetch('SELECT * FROM ' . dbPrefix . 'pilots WHERE pilotid = ?', array($dbID));
 
 if(!empty($pilot))
 {       
-    $flight = $database->fetch('SELECT pilotid,flightnum,pilotname,aircraft,lat,lng,heading,alt,gs,depicao,arricao,deptime,arrtime,route,distremain,timeremaining,phasedetail,online,client FROM ' . dbPrefix . 'acarsdata WHERE id = ?', array($_POST['instance']));
+    $flight = $database->fetch('SELECT pilotid,flightnum,pilotname,aircraft,lat,lng,heading,alt,gs,depicao,arricao,deptime,arrtime,route,distremain,timeremaining,phasedetail,online,client FROM ' . dbPrefix . 'acarsdata WHERE id = ?', array($_POST['instanceID']));
     if(!empty($flight) && !empty($flight[0]))
     {
         $flight = $flight[0];
@@ -34,13 +34,13 @@ if(!empty($pilot))
         $flight['lng'] = $lon;
         $flight['heading'] = $_POST['heading'];
         $flight['alt'] = $_POST['altitude'];
-        $flight['gs'] = $_POST['groundspeed'];
+        $flight['gs'] = $_POST['groundSpeed'];
         $flight['heading'] = $_POST['trueheading'];
         $flight['phasedetail'] = $_POST['phase'];
-        $flight['deptime'] = $_POST['departuretime'];
-        $flight['arrtime'] = $_POST['arrivaltime'];
-        $flight['distremain'] = $_POST['distanceremaining'];
-        $flight['timeremaining'] = $_POST['timeremaining'];
+        $flight['deptime'] = $_POST['departureTime'];
+        $flight['arrtime'] = $_POST['arrivalTime'];
+        $flight['distremain'] = $_POST['distanceRemaining'];
+        $flight['timeremaining'] = $_POST['timeRemaining'];
 
         if(isset($_POST['route']))
             $flight['route'] = $_POST['route'];

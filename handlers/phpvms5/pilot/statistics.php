@@ -2,7 +2,9 @@
 if(!defined('API'))
     exit;
     
-$pilotResults = $database->fetch('SELECT * FROM ' . dbPrefix . 'pilots WHERE pilotid=?',array($_GET['uid']));
+assertData($_GET, array('id'=>'number'));
+
+$pilotResults = $database->fetch('SELECT * FROM ' . dbPrefix . 'pilots WHERE pilotid=?',array($_GET['id']));
 $pilotResults = $pilotResults[0];
 $pirepResults = $database->fetch('SELECT landingRate FROM ' . dbPrefix . 'pireps WHERE pilotid=? AND accepted = 1 ORDER BY submitdate');
 $totalLandingRate = 0;

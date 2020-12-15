@@ -4,7 +4,7 @@ if(!defined('API'))
 
 assertData(
     $_POST,
-    array('number' => 'number', 'departure' => 'string', 'arrival' => 'string', 'route' => 'string', 'aircraft' => 'string', 'cruise' => 'number', 'distance' => 'number', 'departureTime' => 'string', 'departuretime' => 'string', 'arrivalTime' => 'string', 'flightTime' => 'string', 'lat' => 'string', 'long' => 'string', 'heading' => 'number', 'altitude' => 'number', 'network' => 'string')    
+    array('number' => 'number', 'departure' => 'string', 'arrival' => 'string', 'route' => 'string', 'aircraft' => 'string', 'cruise' => 'number', 'distance' => 'number', 'departureTime' => 'string', 'arrivalTime' => 'string', 'flightTime' => 'string', 'latitude' => 'string', 'longitude' => 'string', 'heading' => 'number', 'altitude' => 'number', 'network' => 'string')    
 );
 
 if (isset($_POST['flightType']) && $_POST['flightType'] == 'C')
@@ -17,7 +17,7 @@ if (isset($_POST['code']) && $_POST['code'] == '')
 else
     $code = 'SCC';
 
-if (isset($_POST['ticketPrice']))
+if (isset($_POST['ticketPrice']) && is_numeric($_POST['ticketPrice']))
     $ticketPrice = $_POST['ticketPrice'];
 else
     $ticketPrice = 0;
@@ -90,5 +90,5 @@ $bidID = $database->getLastInsertID();
 $charterQuery = $database->execute('INSERT INTO smartCARS3_CharterFlights (scheduleID, bidID, dbID) VALUES (?, ?, ?)',array($scheduleID, $bidID, $dbID));
 if ($charterQuery != true)
     errorOut(500,'Unable to create charter flight');
-echo(json_encode(array('instanceID'=>$instanceID)));
+echo(json_encode(array('instanceID'=>$instanceID, 'bidID'=>$bidID)));
 ?>

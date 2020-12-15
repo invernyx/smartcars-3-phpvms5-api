@@ -2,7 +2,7 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-if (!function_exists(http_response_code)) {
+if (!function_exists("http_response_code")) {
     function http_response_code($code) {
         header('X-PHP-Response-Code: ' . $code, true, $code);
     }
@@ -18,7 +18,7 @@ if($request[0] == '')
 {
     array_splice($request, 0, 1);
 }
-while(count($request) > 0 && (strtolower($request[0]) == 'smartcars' || strtolower($request[0]) == 'api'))
+while(count($request) > 0 && (strtolower($request[0]) == 'smartcars' || strtolower($request[0]) == 'api' || strtolower($request[0]) == 'api.php'))
 {
     array_splice($request, 0, 1);
 }

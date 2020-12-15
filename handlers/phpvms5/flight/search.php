@@ -4,13 +4,13 @@ if(!defined('API'))
 
 $departureicao = isset($_GET['departure']) ? $_GET['departure'] : '';
 $arrivalicao = isset($_GET['arrival']) ? $_GET['arrival'] : '';
-$mintime = isset($_GET['mintime']) ? $_GET['mintime'] : '';
-$maxtime = isset($_GET['maxtime']) ? $_GET['maxtime'] : '';
+$mintime = isset($_GET['minTime']) ? $_GET['minTime'] : '';
+$maxtime = isset($_GET['maxTime']) ? $_GET['maxTime'] : '';
 $aircraft = isset($_GET['aircraft']) ? $_GET['aircraft'] : '';
 
 $arg = array();
 
-$param = 'SELECT id,code,flightnum,depicao,arricao,route,aircraft,flightlevel,distance,deptime,flighttime,arrtime,daysofweek,notes FROM ' . dbPrefix . 'schedules';
+$param = 'SELECT id,code,flightnum as flightNum,depicao as departure,arricao as arrival,route,aircraft,flightlevel as flightLevel,distance,deptime as departureTime,flighttime as flightTime,arrtime as arrivalTime,daysofweek as daysOfWeek,notes FROM ' . dbPrefix . 'schedules';
 if ($departureicao != '' || $arrivalicao != '' || $mintime != '' || $maxtime != '')
 {    
     $arg = array();
