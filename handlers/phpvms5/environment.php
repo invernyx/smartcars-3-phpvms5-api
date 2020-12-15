@@ -1,4 +1,7 @@
 <?php
+if(!defined('API'))
+    exit;
+    
 require_once('../core/codon.config.php'); 
 require_once('../core/local.config.php');
 

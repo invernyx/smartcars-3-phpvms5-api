@@ -1,4 +1,7 @@
 <?php
+if(!defined('API'))
+    exit;
+    
 $host = null;
 function env($name, $value) {
     if ($name == 'DB_HOST') {
