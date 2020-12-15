@@ -55,10 +55,10 @@ function generateJSON($data, $sessionNeeded = false) {
                 errorOut(404,'Pilot not found');
                 break;
             case 'incorrectPassword':
-                errorOut(403,'Incorrect password given');
+                errorOut(401,'Incorrect password given');
                 break;
             case 'invalid':
-                errorOut(403,'Incorrect session given');
+                errorOut(401,'Incorrect session given');
                 break;
         }
     } else {
