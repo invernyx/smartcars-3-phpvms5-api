@@ -2,8 +2,8 @@
 if(!defined('API'))
     exit;
 
-require_once("../core/common/NavData.class.php"); 
-require_once("../core/common/ACARSData.class.php");
+require_once('../core/common/NavData.class.php'); 
+require_once('../core/common/ACARSData.class.php');
 
 assertData(
     $_POST,
@@ -18,8 +18,8 @@ if(!empty($pilot))
     if(!empty($flight) && !empty($flight[0]))
     {
         $flight = $flight[0];
-        $lat = str_replace(",", ".", $_POST['latitude']);
-        $lon = str_replace(",", ".", $_POST['longitude']);
+        $lat = str_replace(',', '.', $_POST['latitude']);
+        $lon = str_replace(',', '.', $_POST['longitude']);
         
         $lat = doubleval($lat);
         $lon = doubleval($lon);
