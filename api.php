@@ -7,6 +7,9 @@ if (!function_exists("http_response_code")) {
 
 define('API', true);
 header('Content-type: application/json');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');  
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"); 
+header('Access-Control-Allow-Origin: *');
 
 $var = explode('?', $_SERVER['REQUEST_URI']);
 $request = explode('/', $var[0]);
