@@ -121,7 +121,7 @@ if(count($request) > 0)
     }
         
     $dbID = '';
-    if(count($request) < 2 || strtolower($request[0]) != "pilot" || strtolower($request[1]) != "login")
+    if(count($request) < 3 || strtolower($request[1]) != "pilot" || strtolower($request[2]) != "login")
     {
         authenticate($_SERVER['HTTP_AUTHORIZATION']); //comment to unrestrict access
         $dbIDspl = explode(':', $_SERVER['HTTP_AUTHORIZATION']);
