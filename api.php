@@ -121,6 +121,13 @@ if(count($request) > 0)
     }
         
     $dbID = '';
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        try {
+            $json = json_decode(file_get_contents('php://input'), true);
+            if ($json != null)
+                $_POST = $json;
+        } catch (Exception $e) {}
+    }
     if(count($request) < 3 || strtolower($request[1]) != "pilot" || strtolower($request[2]) != "login")
     {
         authenticate($_SERVER['HTTP_AUTHORIZATION']); //comment to unrestrict access
