@@ -83,7 +83,7 @@ if (isset($_POST['password'])) {
 
     generateJSON(attemptLogin($results, array('password'=>$_POST['password'])), true);
 }
-else {
+else if (isset($_POST['session'])) {
     if (strpos($_GET['id'], '@')) {
         $results = $database->fetch('SELECT * FROM ' . dbPrefix . 'pilots WHERE email=?',array($_GET['id']));
     } else {
@@ -93,5 +93,8 @@ else {
 
     if ($results != array())
         generateJSON(attemptLogin($results, array('session'=>$_POST['session']), false));
+}
+else {
+    errorOut(401, "No credentials given.");
 }
 ?>
