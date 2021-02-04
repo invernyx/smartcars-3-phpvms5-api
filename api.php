@@ -78,7 +78,7 @@ function assertData($source, $data)
 function authenticate($headers) {
     global $database;
     $header = explode(':', $headers);
-    if (sizeof($header) > 1)    
+    if (sizeof($header) == 1)    
         errorOut(400, 'Bad headers provided');        
     
     $dbid = $header[0];
