@@ -2,7 +2,7 @@
 if(!defined('API'))
     exit;
 
-$database->createTable('smartCARS3Sessions','id int(16) AUTO_INCREMENT, dbID int(16), sessionID varchar(64), timestamp int(16), PRIMARY KEY(id)');
+$database->createTable('smartCARS3Sessions','id int(16) AUTO_INCREMENT, dbID int(16), sessionID varchar(96), timestamp int(16), PRIMARY KEY(id)');
 $database->execute('DELETE FROM smartCARS3Sessions WHERE timestamp < ?',array(time() - 2592000));
 
 function attemptLogin($results, $loginData, $passwordRequired = true) {
