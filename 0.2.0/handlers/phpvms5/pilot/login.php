@@ -1,6 +1,6 @@
 <?php
-$database->createTable('smartCARS3_sessions', 'id int(16) AUTO_INCREMENT, dbID int(16), sessionID varchar(256), expiry int(16), PRIMARY KEY(id)');
-$database->execute('DELETE FROM smartCARS3_sessions WHERE expiry > ?', array(time()));
+$database->createTable('smartCARS3_newSessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11), PRIMARY KEY(pilotID)');
+$database->execute('DELETE FROM smartCARS3_newSessions WHERE expiry > ?', array(time()));
 
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
@@ -12,7 +12,7 @@ if($_GET['username'] === null)
     error(400, 'Username is a required parameter (type `string`)');
     exit;
 }
-if($_POST['password'] == null)
+if($_POST['password'] === null)
 {
     error(400, 'Password is a required field (type `string`)');
     exit;
@@ -51,20 +51,22 @@ if($md5Hash !== $result['password'])
     error(401, 'The password was not correct');
     exit;
 }
+$expiry = time() + 604800;
 $JWTHeader = json_encode(array('typ' => 'JWT', 'alg' => 'HS256'));
-$JWTPayload = json_encode(array('sub' => $result['pilotid'], 'exp' => time() + 604800));
+$JWTPayload = json_encode(array('sub' => $result['pilotid'], 'exp' => $expiry));
 $JWTHeader = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTHeader));
 $JWTPayload = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTPayload));
-$JWTSignature = hash_hmac('sha256', $JWTHeader . '.' . $JWTPayload, 'randomKey', true);
+$JWTSignature = hash_hmac('sha256', $JWTHeader . '.' . $JWTPayload, uniqid('', true), true);
 $JWTSignature = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTSignature));
-// Insert JWT to database
-// Handle if session for user already exists
+$jwt = $JWTHeader . '.' . $JWTPayload . '.' . $JWTSignature;
+$database->execute('DELETE FROM smartCARS3_newSessions WHERE pilotID=?', array($result['pilotid']));
+$database->insert('smartCARS3_newSessions', array('pilotID' => $result['pilotid'], 'sessionID' => $jwt, 'expiry' => $expiry));
 echo(json_encode(array(
     'pilotID' => $result['pilotid'],
     'firstName' => $result['firstname'],
     'lastName' => $result['lastname'],
     'email' => $result['email'],
     'rank' => $result['rank'],
-    'session' => $JWTHeader . '.' . $JWTPayload . '.' . $JWTSignature
+    'session' => $jwt
 )));
 ?>
