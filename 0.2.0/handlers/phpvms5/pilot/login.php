@@ -1,6 +1,6 @@
 <?php
-$database->createTable('smartCARS3_newSessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11), PRIMARY KEY(pilotID)');
-$database->execute('DELETE FROM smartCARS3_newSessions WHERE expiry > ?', array(time()));
+$database->createTable('smartCARS3_newSessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID)');
+$database->execute('DELETE FROM smartCARS3_newSessions WHERE expiry < ?', array(time()));
 
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
