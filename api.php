@@ -49,9 +49,13 @@ function assertData($source, $data)
                 case 'int':
                     if(is_int($source[$name]))
                         $valid = true;
+                    if(is_numeric($source[$name]))
+                        $valid = true;
                     break;
                 case 'float':
                     if(is_float($source[$name]))
+                        $valid = true;
+                    if(is_numeric($source[$name]))
                         $valid = true;
                     break;
                 case 'string':
