@@ -96,24 +96,24 @@ function assertData($source, $data)
             }
         }
         if(!$valid)
-            array_push($invalidData, $name);
+            array_push($invalidData, $name . ' (expected `' . $type . '`)');
     }
 
     if(count($invalidData) > 0)
     {
         $message = 'Invalid ';
         if(count($invalidData) > 1)
-            $message .= 'types';
+            $message .= 'types for ';
         else
-            $message .= 'type';
+            $message .= 'type for ';
 
         $firstItem = true;
         foreach($invalidData as $data)
         {
-            if($first)
+            if($firstItem)
             {
                 $message .= $data;
-                $first = false;
+                $firstItem = false;
             }
             else
                 $message .= ', ' . $data;
