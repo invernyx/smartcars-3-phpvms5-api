@@ -58,6 +58,10 @@ function assertData($source, $data)
                     if(is_numeric($source[$name]))
                         $valid = true;
                     break;
+                case 'date':
+                    if(strtotime($source[$name]) !== false)
+                        $valid = true;
+                    break;
                 case 'string':
                     if(is_string($source[$name]))
                         $valid = true;
@@ -68,33 +72,37 @@ function assertData($source, $data)
                     break;
                 case 'flight':
                 case 'flightNumber':
-                    if(preg_match('^[A-Z]{3}[A-Z0-9]{1,}$', $source[$name]))
+                    if(is_string($source[$name]) && preg_match('/[A-Z]{3}[A-Z0-9]{1,}/mi', $source[$name]))
                         $valid = true;
                     break;
                 case 'airport':
-                    if(preg_match('^[A-Z]{4}$', $source[$name]))
+                    if(is_string($source[$name]) && preg_match('/[A-Z]{4}/mi', $source[$name]))
                         $valid = true;
                     break;
                 case 'aircraft':
-                    if(preg_match('^[A-Z]{1}[A-Z0-9]{1,3}$', $source[$name]))
+                    if(is_string($source[$name]) && preg_match('/[A-Z]{1}[A-Z0-9]{1,3}/mi', $source[$name]))
                         $valid = true;
                     break;
                 case 'airline':
-                    if(preg_match('^[A-Z]{3}$', $source[$name]))
+                    if(is_string($source[$name]) && preg_match('/[A-Z]{3}/mi', $source[$name]))
                         $valid = true;
                     break;
                 case 'route':
                 case 'routePoint':
                 case 'waypoint':
-                    if(preg_match('^((0?[1-9]|[1-2]\\d|3[0-6])[LCR]?)|([A-Z]{5})|([A-Z]{3})|([A-Z]{1-3})$', $source[$name]))
+                    if(is_string($source[$name]) && preg_match('/((0?[1-9]|[1-2]\\d|3[0-6])[LCR]?)|([A-Z]{5})|([A-Z]{3})|([A-Z]{1-3})/mi', $source[$name]))
                         $valid = true;
                     break;
                 case 'phase':
-                    if(preg_match('^BOARDING|PUSH_BACK|TAXI|TAKE_OFF|REJECTED_TAKE_OFF|CLIMB_OUT|CLIMB|CRUISE|DESCENT|APPROACH|FINAL|LANDED|GO_AROUND|TAXI_TO_GATE|DEBOARDING|DIVERTED$', $source[$name]))
+                    if(is_string($source[$name]) && preg_match('/boarding|push_back|taxi|take_off|rejected_take_off|climb_out|climb|cruise|descent|approach|final|landed|go_around|taxi_to_gate|deboarding|diverted/mi', $source[$name]))
                         $valid = true;
                     break;
                 case 'network':
-                    if(preg_match('^Offline|VATSIM|PilotEdge|IVAO|POSCON$', $source[$name]))
+                    if(is_string($source[$name]) && preg_match('/offline|vatsim|pilotedge|ivao|poscon/mi', $source[$name]))
+                        $valid = true;
+                    break;
+                case 'status':
+                    if(is_string($source[$name]) && preg_match('/accepted|pending|denied/mi', $source[$name]))
                         $valid = true;
                     break;
             }
