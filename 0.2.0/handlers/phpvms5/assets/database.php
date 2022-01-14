@@ -1,7 +1,6 @@
 <?php
 class database {
     private $connection = null;
-    private $insertID = 0;
 
     function __construct($databaseName, $databaseHost, $databaseUsername, $databasePassword) {
         // $databaseName - This is the name of the database that you are connecting to.
@@ -121,7 +120,6 @@ class database {
             } catch (Exception $e) {
                 return null;
             }
-            $this->insertID = $this->connection->lastInsertID();
             $query->closeCursor();
             return true;
         }
@@ -191,8 +189,8 @@ class database {
         return null;
     }
 
-    public function getLastInsertID() {
-        return $this->insertID;
+    public function getLastInsertID($sequence = null) {
+        return $this->connection->lastInsertId($sequence);
     }
 }
 ?>
