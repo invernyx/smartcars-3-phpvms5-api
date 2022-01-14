@@ -1,7 +1,7 @@
 <?php
-if($_GET['id'] === null || $_GET['id'] === '')
+if($_GET['id'] === null)
 {
-    error(400, 'The PIREP ID was not provided');
+    error(400, 'PIREP ID is a required parameter (type `int`)');
     exit;
 }
 assertData($_GET, array('id'=>'int'));
