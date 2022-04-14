@@ -1,5 +1,5 @@
 <?php
-// smartCARS 0.2.0 API
+// smartCARS 0.2.1 API
 // This file must be processable by both PHP 5 and PHP 7
 
 header('Content-type: application/json');
@@ -58,6 +58,18 @@ function assertData($source, $data)
                     if(is_numeric($source[$name]))
                         $valid = true;
                     break;
+                case 'latitude':
+                    if(is_numeric($source[$name]) && $source[$name] >= -90 && $source[$name] <= 90)
+                        $valid = true;
+                    break;
+                case 'longitude':
+                    if(is_numeric($source[$name]) && $source[$name] >= -180 && $source[$name] <= 180)
+                        $valid = true;
+                    break;
+                case 'heading':
+                    if(is_numeric($source[$name]) && $source[$name] >= 0 && $source[$name] <= 360)
+                        $valid = true;
+                    break;
                 case 'date':
                     if(strtotime($source[$name]) !== false)
                         $valid = true;
@@ -105,10 +117,17 @@ function assertData($source, $data)
                     if(is_string($source[$name]) && preg_match('/accepted|pending|denied/mi', $source[$name]))
                         $valid = true;
                     break;
+                case 'array':
+                    if(is_array($source[$name]))
+                        $valid = true;
+                    break;
+                default:
+                    $valid = true;
+                    break;
             }
         }
         if(!$valid)
-            array_push($invalidData, $name . ' (expected `' . $type . '`)');
+            array_push($invalidData, $name . ' (expected `' . $type . '` [Raw Type: `' . gettype($source[$name]) . '`])');
     }
 
     if(count($invalidData) > 0)
@@ -136,7 +155,7 @@ function assertData($source, $data)
 
 if(count($requestURL) > 0)
 {
-    $defaultVersion = '0.2.0';
+    $defaultVersion = '0.2.1';
     $apiVersion = $defaultVersion;
     if($_GET['v'] !== null)
     {
