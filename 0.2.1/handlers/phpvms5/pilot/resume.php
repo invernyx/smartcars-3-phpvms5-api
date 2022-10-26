@@ -1,6 +1,6 @@
 <?php
-$database->createTable('smartCARS3_newSessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID)');
-$database->execute('DELETE FROM smartCARS3_newSessions WHERE expiry < ?', array(time()));
+$database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID)');
+$database->execute('DELETE FROM smartCARS3_Sessions WHERE expiry < ?', array(time()));
 
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
@@ -37,25 +37,51 @@ if($session[1]['sub'] === null || $session[1]['exp'] === null)
     error(401, 'The session given was not signed by this website');
     exit;
 }
-$validSessions = $database->fetch('SELECT sessionID FROM smartCARS3_newSessions WHERE pilotID=? AND expiry=? AND sessionID=?', array($session[1]['sub'], $session[1]['exp'], $_POST['session']));
+$validSessions = $database->fetch('SELECT sessionID FROM smartCARS3_Sessions WHERE pilotID=? AND expiry=? AND sessionID=?', array($session[1]['sub'], $session[1]['exp'], $_POST['session']));
 if(count($validSessions) === 0)
 {
     error(401, 'The session given was not valid');
     exit;
 }
-$result = $database->fetch('SELECT pilotid, firstname, lastname, email, rank FROM ' . dbPrefix . 'pilots WHERE pilotid=?', array($session[1]['sub']));
+$result = $database->fetch('SELECT code, pilotid, firstname, lastname, email, rank FROM ' . dbPrefix . 'pilots WHERE pilotid=?', array($session[1]['sub']));
 if($result === array())
 {
     error(500, 'The session was found, but there was no valid pilot. Please report this to the VA');
     exit;
 }
 $result = $result[0];
+
+
+$dbid = intval($result['pilotid']);
+$pilotid = $result['code'];
+$pilotnum = (string)($dbid + intval(pilotOffset));
+while(strlen($pilotnum) < pilotIDLength)
+{
+    $pilotnum = '0' . $pilotnum;
+}
+$pilotid .= $pilotnum;
+
+$avatar = null;
+$avatarFile = '/lib/avatars/' . $pilotid . '.png';
+if(file_exists(webRoot . $avatarFile))
+{
+    $url = sprintf(
+        "%s://%s",
+        isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+        $_SERVER['SERVER_NAME']        
+      );
+    $avatar = $url . $avatarFile;
+}
+
 echo(json_encode(array(
-    'pilotID' => $result['pilotid'],
+    'dbid' => $dbid,    
+    'pilotID' => $pilotid,
     'firstName' => $result['firstname'],
     'lastName' => $result['lastname'],
     'email' => $result['email'],
     'rank' => $result['rank'],
+    'ranklevel' => intval($result['ranklevel']),
+    'avatar' => $avatar,
     'session' => $_POST['session']
 )));
 ?>

@@ -207,7 +207,7 @@ if(count($requestURL) > 0)
         $jwt = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',$jwtPayload[1]))), true);
         $pilotID = $jwt['sub'];
         $sessionID = explode('Bearer ', $_SERVER['HTTP_AUTHORIZATION']);
-        $sessions = $database->fetch('SELECT sessionID FROM smartCARS3_newSessions WHERE pilotID=? AND sessionID=?', array($jwt['sub'], $sessionID[1]));
+        $sessions = $database->fetch('SELECT sessionID FROM smartCARS3_Sessions WHERE pilotID=? AND sessionID=?', array($jwt['sub'], $sessionID[1]));
         if($sessions === array())
         {
             error(401, 'The session provided is not valid');

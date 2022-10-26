@@ -1,6 +1,6 @@
 <?php
-$database->createTable('smartCARS3_newSessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID)');
-$database->execute('DELETE FROM smartCARS3_newSessions WHERE expiry < ?', array(time()));
+$database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID)');
+$database->execute('DELETE FROM smartCARS3_Sessions WHERE expiry < ?', array(time()));
 
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
@@ -22,11 +22,11 @@ assertData($_POST, array('password' => 'string'));
 
 if(strpos($_GET['username'], '@'))
 {
-    $result = $database->fetch('SELECT pilotid, firstname, lastname, email, rank, retired, confirmed, password, salt FROM ' . dbPrefix . 'pilots WHERE email=?', array($_GET['username']));
+    $result = $database->fetch('SELECT code, pilotid, firstname, lastname, email, rank, retired, confirmed, password, salt FROM ' . dbPrefix . 'pilots WHERE email=?', array($_GET['username']));
 }
 else
 {
-    $result = $database->fetch('SELECT pilotid, firstname, lastname, email, rank, retired, confirmed, password, salt FROM ' . dbPrefix . 'pilots WHERE pilotid=?', array($_GET['username']));
+    $result = $database->fetch('SELECT code, pilotid, firstname, lastname, email, rank, retired, confirmed, password, salt FROM ' . dbPrefix . 'pilots WHERE pilotid=?', array($_GET['username']));
 }
 
 if($result === array())
@@ -59,14 +59,39 @@ $JWTPayload = str_replace(array('+', '/', '='), array('-', '_', ''), base64_enco
 $JWTSignature = hash_hmac('sha256', $JWTHeader . '.' . $JWTPayload, uniqid('', true), true);
 $JWTSignature = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTSignature));
 $jwt = $JWTHeader . '.' . $JWTPayload . '.' . $JWTSignature;
-$database->execute('DELETE FROM smartCARS3_newSessions WHERE pilotID=?', array($result['pilotid']));
-$database->insert('smartCARS3_newSessions', array('pilotID' => $result['pilotid'], 'sessionID' => $jwt, 'expiry' => $expiry));
+$database->execute('DELETE FROM smartCARS3_Sessions WHERE pilotID=?', array($result['pilotid']));
+$database->insert('smartCARS3_Sessions', array('pilotID' => $result['pilotid'], 'sessionID' => $jwt, 'expiry' => $expiry));
+
+$dbid = intval($result['pilotid']);
+$pilotid = $result['code'];
+$pilotnum = (string)($dbid + intval(pilotOffset));
+while(strlen($pilotnum) < pilotIDLength)
+{
+    $pilotnum = '0' . $pilotnum;
+}
+$pilotid .= $pilotnum;
+
+$avatar = null;
+$avatarFile = '/lib/avatars/' . $pilotid . '.png';
+if(file_exists(webRoot . $avatarFile))
+{
+    $url = sprintf(
+        "%s://%s",
+        isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+        $_SERVER['SERVER_NAME']        
+      );
+    $avatar = $url . $avatarFile;
+}
+
 echo(json_encode(array(
-    'pilotID' => $result['pilotid'],
+    'dbid' => $dbid,
+    'pilotID' => $pilotid,
     'firstName' => $result['firstname'],
     'lastName' => $result['lastname'],
     'email' => $result['email'],
     'rank' => $result['rank'],
+    'ranklevel' => intval($result['ranklevel']),
+    'avatar' => $avatar,
     'session' => $jwt
 )));
 ?>
