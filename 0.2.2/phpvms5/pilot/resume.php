@@ -74,13 +74,13 @@ if(file_exists(webRoot . $avatarFile))
 }
 
 echo(json_encode(array(
-    'dbid' => $dbid,    
+    'dbID' => $dbid,    
     'pilotID' => $pilotid,
     'firstName' => $result['firstname'],
     'lastName' => $result['lastname'],
     'email' => $result['email'],
     'rank' => $result['rank'],
-    'ranklevel' => intval($result['ranklevel']),
+    'rankLevel' => intval($result['ranklevel']),
     'avatar' => $avatar,
     'session' => $_POST['session']
 )));
