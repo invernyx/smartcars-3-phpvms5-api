@@ -11,12 +11,6 @@ if($_POST['flightID'] === null)
 }
 assertData($_POST, array('flightID' => 'int'));
 
-$bids = $database->fetch('SELECT pilotid FROM ' . dbPrefix . 'bids WHERE pilotid=?', array($pilotID));
-if($bids !== array())
-{
-    error(429, 'This pilot already has an existing booking');
-    exit;
-}
 $schedule = $database->fetch('SELECT id FROM ' . dbPrefix . 'schedules WHERE id=?', array($_POST['flightID']));
 if($schedule === array())
 {
