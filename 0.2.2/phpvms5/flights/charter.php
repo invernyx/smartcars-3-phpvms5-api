@@ -47,6 +47,8 @@ if(count($missingFields) !== 0)
     error(400, 'The following required fields were not present: ' . implode(', ', $missingFields));
     exit;
 }
+
+// Rank/aircraft restriction applied here
 assertData($_POST, array(
     'number' => 'string',
     'departure' => 'airport',
