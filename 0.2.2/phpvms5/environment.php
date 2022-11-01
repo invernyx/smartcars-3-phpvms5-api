@@ -6,6 +6,7 @@
 require_once('../core/codon.config.php'); 
 require_once('../core/local.config.php');
 
+define('webRoot', '/home/tfdidev/public_html/scdc5/');
 define('dbName', DBASE_NAME);
 define('dbHost', DBASE_SERVER);
 define('dbUsername', DBASE_USER);
