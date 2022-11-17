@@ -12,7 +12,8 @@ deptime as departureTime,
 arrtime as arrivalTime,
 CAST(flighttime AS DECIMAL(4,2)) as flightTime,
 daysofweek as daysOfWeek,
-notes FROM ' . dbPrefix . 'schedules';
+notes FROM ' . dbPrefix . 'schedules
+ORDER BY id DESC';
 $whereInQuery = false;
 $parameters = array();
 
