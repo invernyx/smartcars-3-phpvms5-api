@@ -88,11 +88,7 @@ function assertData($source, $data)
                         $valid = true;
                     break;
                 case 'airport':
-                    if(is_string($source[$name]) && preg_match('/[A-Z]{4}/mi', $source[$name]))
-                        $valid = true;
-                    break;
-                case 'aircraft':
-                    if(is_string($source[$name]) && preg_match('/[A-Z]{1}[A-Z0-9]{1,3}/mi', $source[$name]))
+                    if(is_string($source[$name]) && preg_match('/[A-Z]{3,4}/mi', $source[$name]))
                         $valid = true;
                     break;
                 case 'airline':
@@ -155,7 +151,7 @@ function assertData($source, $data)
 
 if(count($requestURL) > 0)
 {
-    $defaultVersion = '0.2.2';
+    $defaultVersion = '0.2.3';
     $apiVersion = $defaultVersion;
     if($_GET['v'] !== null)
     {

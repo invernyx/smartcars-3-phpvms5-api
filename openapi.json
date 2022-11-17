@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "version": "0.2.2",
+        "version": "0.2.3",
         "title": "smartCARS 3 Public API"
     },
     "paths": {
@@ -80,11 +80,38 @@
                     },
                     {
                         "in": "query",
+                        "name": "minimumDistance",
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "maximumDistance",
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "in": "query",
                         "name": "aircraft",
                         "schema": {
-                            "type": "string",
-                            "pattern": "^[A-Z]{1}[A-Z0-9]{1,3}$"
-                        }
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "description": "The ID of the aircraft to search for"
+                    },
+                    {
+                        "in": "query",
+                        "name": "callsign",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "A callsign pattern to search for (does not have to be exact)"
                     }
                 ],
                 "responses": {
