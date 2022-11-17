@@ -12,8 +12,7 @@ deptime as departureTime,
 arrtime as arrivalTime,
 CAST(flighttime AS DECIMAL(4,2)) as flightTime,
 daysofweek as daysOfWeek,
-notes FROM ' . dbPrefix . 'schedules
-ORDER BY id DESC';
+notes FROM ' . dbPrefix . 'schedules';
 $whereInQuery = false;
 $parameters = array();
 
@@ -88,7 +87,7 @@ if($_GET['aircraft'] !== null)
     $query .= 'aircraft = (SELECT id FROM ' . dbPrefix . 'aircraft WHERE icao=:aircraft LIMIT 1)';
     $parameters[':aircraft'] = $_GET['aircraft'];
 }
-$query .= ' ORDER BY code, number LIMIT 1000';
+$query .= ' ORDER BY id DESC LIMIT 1000';
 $results = $database->fetch($query, $parameters);
 foreach($results as $index=>$result)
 {
