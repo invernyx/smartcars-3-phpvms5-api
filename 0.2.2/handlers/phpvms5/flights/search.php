@@ -87,7 +87,7 @@ if($_GET['aircraft'] !== null)
     $query .= 'aircraft = (SELECT id FROM ' . dbPrefix . 'aircraft WHERE icao=:aircraft LIMIT 1)';
     $parameters[':aircraft'] = $_GET['aircraft'];
 }
-$query .= ' ORDER BY id DESC LIMIT 100';
+$query .= ' ORDER BY id DESC LIMIT 1000';
 $results = $database->fetch($query, $parameters);
 foreach($results as $index=>$result)
 {
