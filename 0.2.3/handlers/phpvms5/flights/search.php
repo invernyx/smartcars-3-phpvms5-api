@@ -134,7 +134,7 @@ if($_GET['maximumDistance'] !== null)
     $parameters[':maximumDistance'] = $_GET['maximumDistance'];
 }
 
-$query .= ' ORDER BY code, number LIMIT 100';
+$query .= ' ORDER BY id DESC LIMIT 100';
 $results = $database->fetch($query, $parameters);
 
 foreach($results as $index=>$result)
