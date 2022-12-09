@@ -5,17 +5,14 @@ $database->execute('DELETE FROM smartCARS3_Sessions WHERE expiry < ?', array(tim
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
-    exit;
 }
 if($_GET['username'] === null)
 {
     error(400, 'Username is a required parameter (type `string`)');
-    exit;
 }
 if($_POST['password'] === null)
 {
     error(400, 'Password is a required field (type `string`)');
-    exit;
 }
 assertData($_GET, array('username' => 'string'));
 assertData($_POST, array('password' => 'string'));
@@ -32,7 +29,6 @@ else
 if($result === array())
 {
     error(404, 'No pilot exists with username ' . $_GET['username']);
-    exit;
 }
 $result = $result[0];
 
@@ -43,13 +39,11 @@ if($result['retired'] !== 0 && !fetchRetiredPilots)
 if($result['confirmed'] === 0)
 {
     error(409, 'The pilot has not been confirmed with this airline yet');
-    exit;
 }
 $md5Hash = md5($_POST['password'] . $result['salt']);
 if($md5Hash !== $result['password'])
 {
     error(401, 'The password was not correct');
-    exit;
 }
 $expiry = time() + 604800;
 $JWTHeader = json_encode(array('typ' => 'JWT', 'alg' => 'HS256'));
