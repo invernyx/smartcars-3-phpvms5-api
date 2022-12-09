@@ -1,5 +1,7 @@
 <?php
-class database {
+// Database library
+// PHP 7
+class Database {
     private $connection = null;
 
     function __construct($databaseName, $databaseHost, $databaseUsername, $databasePassword) {
