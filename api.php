@@ -153,7 +153,7 @@ if(count($requestURL) > 0)
 {
     $defaultVersion = '0.2.3';
     $apiVersion = $defaultVersion;
-    if($_GET['v'] !== null)
+    if(isset($_GET['v']) && $_GET['v'] !== null)
     {
         $apiVersion = $_GET['v'];
     }
@@ -172,7 +172,7 @@ if(count($requestURL) > 0)
     try
     {
         // I really don't like how these are constants and not variables
-        $database = new database(dbName, dbHost, dbUsername, dbPassword);
+        $database = new Database(dbName, dbHost, dbUsername, dbPassword);
     }
     catch (Exception $e)
     {
