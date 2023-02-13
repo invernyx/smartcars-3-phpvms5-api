@@ -22,9 +22,17 @@ $urlNoQuery = explode('?', $_SERVER['REQUEST_URI']);
 $requestURL = explode('/', $urlNoQuery[0]);
 if($requestURL[0] === '')
     array_splice($requestURL, 0, 1);
-while(count($requestURL) > 0 && (strtolower($requestURL[0]) === 'smartcars' || strtolower($requestURL[0]) === 'newsc' || strtolower($requestURL[0]) === 'api' || strtolower($requestURL[0]) === 'api.php'))
+
+$foundAPI = false;
+for($i = 0; $i < count($requestURL);)
 {
-    array_splice($requestURL, 0, 1);
+    $req = trim(strtolower($requestURL[$i]));
+    if($foundAPI === false || $req == '' || $req == null)
+        array_splice($requestURL, $i, 1);
+    else
+        $i++;
+    if($req == 'api.php' || $req == 'api')
+        $foundAPI = true;
 }
 
 function error($httpCode, $message, $exit = true)
