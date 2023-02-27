@@ -23,7 +23,7 @@ if($bids !== array())
     error(409, 'A different pilot has already booked this flight');
     exit;
 }
-// Rank/aircraft restriction applied here
+// TODO: Rank/aircraft restriction applied here
 $database->execute('INSERT INTO ' . dbPrefix . 'bids (pilotid, routeid, dateadded) VALUES (?, ?, NOW())', array($pilotID, $_POST['flightID']));
 
 echo(json_encode(array('bidID'=>intval($database->getLastInsertID('bidid')))));

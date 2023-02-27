@@ -48,7 +48,7 @@ if(count($missingFields) !== 0)
     exit;
 }
 
-// Rank/aircraft restriction applied here
+// TODO: Rank/aircraft restriction applied here
 assertData($_POST, array(
     'number' => 'string',
     'departure' => 'airport',
