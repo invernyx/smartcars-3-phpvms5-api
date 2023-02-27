@@ -13,5 +13,5 @@ define('dbPassword', DBASE_PASS);
 define('dbPrefix', TABLE_PREFIX);
 define('pilotOffset', PILOTID_OFFSET);
 define('pilotIDLength', PILOTID_LENGTH);
-define('sC3Version', 'phpVMS 5 Handler 0.2.0');
+define('sC3Version', 'phpVMS 5 Handler 0.2.1');
 ?>
