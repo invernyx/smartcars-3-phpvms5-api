@@ -1,6 +1,6 @@
 <?php
 // Database library
-// PHP 7
+// PHP 5
 class Database {
     private $connection = null;
 

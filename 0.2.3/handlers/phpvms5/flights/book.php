@@ -4,12 +4,7 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST')
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
     exit;
 }
-if($_POST['flightID'] === null)
-{
-    error(400, 'flightID is a required field (type `int`)');
-    exit;
-}
-assertData($_POST, array('flightID' => 'int'));
+assertData($_POST, array('flightID' => 'string'));
 
 $schedule = $database->fetch('SELECT id FROM ' . dbPrefix . 'schedules WHERE id=?', array($_POST['flightID']));
 if($schedule === array())
@@ -17,7 +12,8 @@ if($schedule === array())
     error(404, 'A flight with this ID could not be found');
     exit;
 }
-$bids = $database->fetch('SELECT bidid FROM ' . dbPrefix . 'bids WHERE routeid=?', array($schedule['id']));
+
+$bids = $database->fetch('SELECT bidid FROM ' . dbPrefix . 'bids WHERE routeid=?', array($schedule[0]['id']));
 if($bids !== array())
 {
     error(409, 'A different pilot has already booked this flight');
