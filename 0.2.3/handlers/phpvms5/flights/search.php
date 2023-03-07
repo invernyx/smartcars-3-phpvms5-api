@@ -2,6 +2,7 @@
 $query = 'SELECT id,
 code,
 flightnum as number,
+flighttype as type,
 depicao as departureAirport,
 arricao as arrivalAirport,
 route,
@@ -187,6 +188,8 @@ foreach($results as $index=>$result)
     $results[$index]['flightLevel'] = intval($result['flightLevel']);
     // Flight Time
     $results[$index]['flightTime'] = floatval($result['flightTime']);
+    // Aircraft
+    $results[$index]['aircraft'] = intval($result['aircraft']);
 }
 echo(json_encode($results));
 ?>
