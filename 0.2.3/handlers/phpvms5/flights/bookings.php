@@ -2,7 +2,7 @@
 $schedules = $database->fetch(
 'SELECT bids.bidid as bidID, schedules.code, schedules.flightnum AS number, schedules.flighttype AS type, schedules.depicao AS departureAirport, schedules.arricao AS arrivalAirport, schedules.route, schedules.aircraft,schedules.flightlevel AS flightLevel,schedules.deptime AS departureTime,schedules.arrtime AS arrivalTime,CAST(schedules.flighttime AS DECIMAL(4,2)) AS flightTime, schedules.distance, schedules.daysofweek AS daysOfWeek, schedules.notes FROM ' . dbPrefix . 'bids AS bids
 INNER JOIN ' . dbPrefix . 'schedules AS schedules ON schedules.id = bids.routeid
-WHERE pilotid = ? AND enabled = 1 ORDER BY bids.dateadded ASC, bids.bidid ASC', array($pilotID));
+WHERE pilotid = ? ORDER BY bids.dateadded ASC, bids.bidid ASC', array($pilotID));
 
 foreach($schedules as $idx=>$schedule)
 {

@@ -4,49 +4,6 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST')
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
     exit;
 }
-$missingFields = array();
-if($_POST['number'] === null)
-{
-    array_push($missingFields, 'number (type `string`)');
-}
-if($_POST['departure'] === null)
-{
-    array_push($missingFields, 'departure (type `airport`)');
-}
-if($_POST['arrival'] === null)
-{
-    array_push($missingFields, 'arrival (type `airport`)');
-}
-if($_POST['route'] === null)
-{
-    array_push($missingFields, 'route (type `array`)');
-}
-if($_POST['aircraft'] === null)
-{
-    array_push($missingFields, 'aircraft (type `aircraft`)');
-}
-if($_POST['cruise'] === null)
-{
-    array_push($missingFields, 'cruise (type `int`)');
-}
-if($_POST['distance'] === null)
-{
-    array_push($missingFields, 'distance (type `float`)');
-}
-if($_POST['departureTime'] === null)
-{
-    array_push($missingFields, 'departureTime (type `time`)');
-}
-if($_POST['arrivalTime'] === null)
-{
-    array_push($missingFields, 'arrivalTime (type `time`)');
-}
-
-if(count($missingFields) !== 0)
-{
-    error(400, 'The following required fields were not present: ' . implode(', ', $missingFields));
-    exit;
-}
 
 // TODO: Rank/aircraft restriction applied here
 assertData($_POST, array(
@@ -54,9 +11,8 @@ assertData($_POST, array(
     'departure' => 'airport',
     'arrival' => 'airport',
     'route' => 'array',
-    'aircraft' => 'aircraft',
+    'aircraft' => 'int',
     'cruise' => 'int',
-    'distance' => 'float',
     'departureTime' => 'string',
     'arrivalTime' => 'string')
 );
@@ -67,5 +23,26 @@ if($airlines === array())
 {
     $database->execute('INSERT INTO ' . dbPrefix . 'airlines (code, name, enabled) VALUES (?, "Charter", 0)', array($code));
 }
+$database->execute('INSERT INTO ' . dbPrefix . 'schedules
+(code,
+flightnum,
+depicao,
+arricao,
+route,
+route_details,
+aircraft,
+flightlevel,
+deptime,
+arrtime,
+flighttime,
+price,
+flighttype,
+timesflown,
+notes,
+enabled) VALUES
+(?, ?, ?, ?, ?, "", ?, ?, ?, ?, ?, 0, "C", 0, "smartCARS Charter Flight", 0)',
+array($code, substr($_POST['number'], 3), $_POST['departure'], $_POST['arrival'], implode(' ', $_POST['route']), $_POST['aircraft'], $_POST['cruise'], $_POST['departureTime'], $_POST['arrivalTime'], strtotime($_POST['arrivalTime']) - strtotime($_POST['departureTime'])));
 
+$database->execute('INSERT INTO ' . dbPrefix . 'bids (pilotid, routeid, dateadded) VALUES (?, ?, NOW())', array($pilotID, $database->getLastInsertID('id')));
+echo(json_encode(array('bidID'=>intval($database->getLastInsertID('bidid')))));
 ?>
