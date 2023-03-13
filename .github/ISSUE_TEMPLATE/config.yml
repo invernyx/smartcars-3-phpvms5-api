@@ -1,0 +1,10 @@
+contact_links:
+  - name: Application Bugs
+    url: https://github.com/invernyx/smartcars-3-bugs/issues
+    about: Report bugs with smartCARS 3
+  - name: TFDi Design Support
+    url: https://support.tfdidesign.com
+    about: Our support portal for general support questions
+  - name: TFDi Design Discord
+    url: https://discord.gg/tfdidesign
+    about: TFDi Design Discord Server
