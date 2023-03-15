@@ -15,13 +15,13 @@ if($flights === array())
     error(404, 'There is no ongoing flight');
     exit;
 }
-$bids = $database->fetch('SELECT bidid FROM ' . dbPrefix . 'bids WHERE bidid=? AND pilotid=?', array($_POST['bidID'], $pilotID));
+$bids = $database->fetch('SELECT routeid FROM ' . dbPrefix . 'bids WHERE bidid=? AND pilotid=?', array($_POST['bidID'], $pilotID));
 if($bids === array())
 {
     error(404, 'There is no ongoing flight');
     exit;
 }
-$route = $database->fetch('SELECT code, flightnum, depicao, arricao, route, aircraft FROM ' . dbPrefix . 'schedules WHERE id=?', $bids[0]['routeid']);
+$route = $database->fetch('SELECT code, flightnum, depicao, arricao, route, aircraft FROM ' . dbPrefix . 'schedules WHERE id=?', array($bids[0]['routeid']));
 $data = array(
     'pilotid' => $pilotID,
     'code' => $route[0]['code'],
@@ -31,7 +31,7 @@ $data = array(
     'route' => $route[0]['route'],
     'aircraft' => $route[0]['aircraft'],
     'load' => $_POST['remainingLoad'],
-    'flighttime' => $_POST['flightTime'],
+    'flighttime' => sprintf('%02d:%02d', floor($_POST['flightTime']), round(($_POST['flightTime'] - floor($_POST['flightTime'])) * 60)),
     'landingrate' => $_POST['landingRate'],
     'submitdate' => date('Y-m-d H:i:s'),
     'fuelused' => $_POST['fuelUsed'],
