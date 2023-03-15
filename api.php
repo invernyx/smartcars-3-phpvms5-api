@@ -1,79 +1,234 @@
 <?php
-define('API', true);
+// smartCARS 0.2.3 API
+// This file must be processable by both PHP 5 and PHP 7
+
 header('Content-type: application/json');
-
-$var = explode('?', $_SERVER['REQUEST_URI']);
-$request = explode('/', $var[0]);
-
-if($request[0] == '')
+if(!function_exists("http_response_code"))
 {
-    array_splice($request, 0, 1);        
+    function http_response_code($code)
+    {
+        header('X-PHP-Response-Code: ' . $code, true, $code);
+    }
 }
-while(count($request) > 0 && (strtolower($request[0]) == 'smartcars' || strtolower($request[0]) == 'api'))
+
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS, HEAD');  
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"); 
+header('Access-Control-Allow-Origin: *');
+
+if($_SERVER['REQUEST_METHOD'] === 'OPTIONS' || $_SERVER['REQUEST_METHOD'] === 'HEAD')
+    exit;
+
+$urlNoQuery = explode('?', $_SERVER['REQUEST_URI']);
+$requestURL = explode('/', $urlNoQuery[0]);
+if($requestURL[0] === '')
+    array_splice($requestURL, 0, 1);
+
+$foundAPI = false;
+for($i = 0; $i < count($requestURL);)
 {
-    array_splice($request, 0, 1);        
+    $req = trim(strtolower($requestURL[$i]));
+    if($foundAPI === false || $req == '' || $req == null)
+        array_splice($requestURL, $i, 1);
+    else
+        $i++;
+    if($req == 'api.php' || $req == 'api')
+        $foundAPI = true;
 }
-    
+
+function error($httpCode, $message, $exit = true)
+{
+    http_response_code($httpCode);
+    echo(json_encode(array('message' => $message)));
+    if($exit)
+        exit;
+}
+
 function assertData($source, $data)
 {
-    $invalid = array();
-
-    foreach($data as $dataname => $datatype)
+    $invalidData = array();
+    foreach($data as $name => $type)
     {
         $valid = false;
-
-        if(isset($source[$dataname]))
+        if(isset($source[$name]))
         {
-            switch(strtolower($datatype))
+            switch(strtolower($type))
             {
-                case 'number':
-                    if(is_numeric($source[$dataname]))
+                case 'integer':
+                case 'int':
+                    if(is_int($source[$name]))
                         $valid = true;
-                    break;                              
+                    if(is_numeric($source[$name]))
+                        $valid = true;
+                    break;
+                case 'float':
+                    if(is_float($source[$name]))
+                        $valid = true;
+                    if(is_numeric($source[$name]))
+                        $valid = true;
+                    break;
+                case 'latitude':
+                    if(is_numeric($source[$name]) && $source[$name] >= -90 && $source[$name] <= 90)
+                        $valid = true;
+                    break;
+                case 'longitude':
+                    if(is_numeric($source[$name]) && $source[$name] >= -180 && $source[$name] <= 180)
+                        $valid = true;
+                    break;
+                case 'heading':
+                    if(is_numeric($source[$name]) && $source[$name] >= 0 && $source[$name] <= 360)
+                        $valid = true;
+                    break;
+                case 'date':
+                    if(strtotime($source[$name]) !== false)
+                        $valid = true;
+                    break;
+                case 'string':
+                    if(is_string($source[$name]))
+                        $valid = true;
+                    break;
+                case 'email':
+                    if(filter_var($source[$name], FILTER_VALIDATE_EMAIL))
+                        $valid = true;
+                    break;
+                case 'flight':
+                case 'flightNumber':
+                    if(is_string($source[$name]) && preg_match('/[A-Z]{3}[A-Z0-9]{1,}/mi', $source[$name]))
+                        $valid = true;
+                    break;
+                case 'airport':
+                    if(is_string($source[$name]) && preg_match('/[A-Z]{3,4}/mi', $source[$name]))
+                        $valid = true;
+                    break;
+                case 'airline':
+                    if(is_string($source[$name]) && preg_match('/[A-Z]{3}/mi', $source[$name]))
+                        $valid = true;
+                    break;
+                case 'route':
+                case 'routePoint':
+                case 'waypoint':
+                    if(is_string($source[$name]) && preg_match('/((0?[1-9]|[1-2]\\d|3[0-6])[LCR]?)|([A-Z]{5})|([A-Z]{3})|([A-Z]{1-3})/mi', $source[$name]))
+                        $valid = true;
+                    break;
+                case 'phase':
+                    if(is_string($source[$name]) && preg_match('/boarding|push_back|taxi|take_off|rejected_take_off|climb_out|climb|cruise|descent|approach|final|landed|go_around|taxi_to_gate|deboarding|diverted/mi', $source[$name]))
+                        $valid = true;
+                    break;
+                case 'network':
+                    if(is_string($source[$name]) && preg_match('/offline|vatsim|pilotedge|ivao|poscon/mi', $source[$name]))
+                        $valid = true;
+                    break;
+                case 'status':
+                    if(is_string($source[$name]) && preg_match('/accepted|pending|denied/mi', $source[$name]))
+                        $valid = true;
+                    break;
+                case 'array':
+                    if(is_array($source[$name]))
+                        $valid = true;
+                    break;
                 default:
                     $valid = true;
+                    break;
             }
         }
-
-        if($valid == false)
-            array_push($invalid, $dataname);
+        if(!$valid)
+            array_push($invalidData, $name . ' (expected `' . $type . '` [Raw Type: `' . gettype($source[$name]) . '`])');
     }
 
-    if(count($invalid) > 0)
+    if(count($invalidData) > 0)
     {
-        $msg = 'Invalid type(s) or missing data for: ';
-        $first = true;
-        foreach ($invalid as $invdata)
+        $message = 'Invalid ';
+        if(count($invalidData) > 1)
+            $message .= 'types for ';
+        else
+            $message .= 'type for ';
+
+        $firstItem = true;
+        foreach($invalidData as $data)
         {
-            if ($first == true)
+            if($firstItem)
             {
-                $msg .= $invdata;
-                $first = false;
+                $message .= $data;
+                $firstItem = false;
             }
             else
-                $msg .= ', ' . $invdata;
+                $message .= ', ' . $data;
         }
-        http_response_code(400);
-        echo(json_encode(array('message'=>$msg)));        
-        
+        error(400, $message);
+    }
+}
+
+if(count($requestURL) > 0)
+{
+    $defaultVersion = '0.2.3';
+    $apiVersion = $defaultVersion;
+    if(isset($_GET['v']) && $_GET['v'] !== null)
+    {
+        $apiVersion = $_GET['v'];
+    }
+    if(!file_exists($apiVersion . '/handlers/' . $requestURL[0] . '/environment.php')) {
+        $apiVersion = $defaultVersion;
+    }
+    require_once($apiVersion . '/handlers/' . $requestURL[0] . '/environment.php');
+
+    if(count($requestURL) === 1)
+    {
+        echo(json_encode(array('apiVersion' => $apiVersion, 'handler' => $requestURL[0])));
         exit;
     }
-}
 
-if(count($request) > 0)
-{
-    $str = "";
-    foreach($request as $req)
+    require_once($apiVersion . '/handlers/' . $requestURL[0] . '/assets/database.php'); // Database import
+    try
     {
-        if($str != "")
-            $str .= "/";
-        $str .= $req;
+        // I really don't like how these are constants and not variables
+        $database = new Database(dbName, dbHost, dbUsername, dbPassword);
+    }
+    catch (Exception $e)
+    {
+        error(500, 'Database credentials could not be loaded');
     }
 
-    //eventually, validate the list
-    require('handlers/' . $str . '.php');
-}
-else
-    die('{}');
+    if($_SERVER['REQUEST_METHOD'] === 'POST')
+    {
+        try
+        {
+            $json = json_decode(file_get_contents('php://input'), true);
+            if($json !== null)
+                $_POST = $json;
+        } catch (Exception $e) {}
+    }
 
+    $authenticate = true;
+    if(strtolower($requestURL[1] === 'pilot'))
+    {
+        if(strtolower($requestURL[2]) === 'login' || strtolower($requestURL[2] === 'resume'))
+        {
+            $authenticate = false;
+        }
+    }
+    if($authenticate)
+    {
+        $jwtPayload = explode('.', $_SERVER['HTTP_AUTHORIZATION']);
+        $jwt = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',$jwtPayload[1]))), true);
+        $pilotID = $jwt['sub'];
+        $sessionID = explode('Bearer ', $_SERVER['HTTP_AUTHORIZATION']);
+        $sessions = $database->fetch('SELECT sessionID FROM smartCARS3_Sessions WHERE pilotID=? AND sessionID=?', array($jwt['sub'], $sessionID[1]));
+        if($sessions === array())
+        {
+            error(401, 'The session provided is not valid');
+            exit;
+        }
+    }
+
+    $requiredFile = '';
+    foreach($requestURL as $fileLocation)
+    {
+        if($requiredFile !== '')
+            $requiredFile .= '/';
+        $requiredFile .= $fileLocation;
+    }
+    if(file_exists($apiVersion . '/handlers/' . $requiredFile . '.php'))
+        require_once($apiVersion . '/handlers/' . $requiredFile . '.php');
+    else
+        error(404, 'The handler provided could not be found');
+}
 ?>

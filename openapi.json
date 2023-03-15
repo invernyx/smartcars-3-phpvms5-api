@@ -1,0 +1,1501 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "version": "0.2.3",
+        "title": "smartCARS 3 Public API"
+    },
+    "paths": {
+        "/": {
+            "get": {
+                "summary": "API Version",
+                "security": [],
+                "description": "Get the current API version",
+                "responses": {
+                    "200": {
+                        "description": "200 - Return the API version",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "apiVersion",
+                                        "handler"
+                                    ],
+                                    "properties": {
+                                        "apiVersion": {
+                                            "type": "string",
+                                            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+                                        },
+                                        "handler": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/flights/search": {
+            "get": {
+                "summary": "Search Flights",
+                "description": "Search for available flights with optional parameters to filter a search",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "departureAirport",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[A-Z]{4}$"
+                        },
+                        "description": "The ICAO code for the departure airport"
+                    },
+                    {
+                        "in": "query",
+                        "name": "arrivalAirport",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[A-Z]{4}$"
+                        },
+                        "description": "The ICAO code for the arrival airport"
+                    },
+                    {
+                        "in": "query",
+                        "name": "minimumFlightTime",
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "maximumFlightTime",
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "minimumDistance",
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "maximumDistance",
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "aircraft",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "description": "The ID of the aircraft to search for"
+                    },
+                    {
+                        "in": "query",
+                        "name": "callsign",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "A callsign pattern to search for (does not have to be exact)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 - Return a list of all available flights",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Flight"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "400 - Invalid type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/flights/book": {
+            "post": {
+                "summary": "Book Flight",
+                "description": "Book a flight based on an existing schedule",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "flightID"
+                                ],
+                                "properties": {
+                                    "flightID": {
+                                        "type": "integer",
+                                        "format": "int32",
+                                        "minimum": 0
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "200 - Booked a flight for the user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "bidID": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "minimum": 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "400 - Invalid type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "403 - The aircraft is restricted to a rank above the pilots",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "404 - This flight ID does not exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "405 - The POST method was not used",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "409 - A pilot already has this flight booked or the pilot has an existing booking",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/flights/charter": {
+            "post": {
+                "summary": "Charter Flight",
+                "description": "Charter a flight that does not have an existing schedule",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "number",
+                                    "departure",
+                                    "arrival",
+                                    "route",
+                                    "aircraft",
+                                    "cruise",
+                                    "distance",
+                                    "departureTime",
+                                    "arrivalTime"
+                                ],
+                                "properties": {
+                                    "number": {
+                                        "type": "string",
+                                        "pattern": "^[A-Z]{3}[A-Z0-9]{1,}$"
+                                    },
+                                    "departure": {
+                                        "type": "string",
+                                        "pattern": "^[A-Z]{4}$"
+                                    },
+                                    "arrival": {
+                                        "type": "string",
+                                        "pattern": "^[A-Z]{4}$"
+                                    },
+                                    "route": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "pattern": "^((0?[1-9]|[1-2]\\d|3[0-6])[LCR]?)|([A-Z]{5})|([A-Z]{3})|([A-Z]{1-3})$"
+                                        }
+                                    },
+                                    "aircraft": {
+                                        "type": "string",
+                                        "pattern": "^[A-Z]{1}[A-Z0-9]{1,3}$"
+                                    },
+                                    "cruise": {
+                                        "type": "integer",
+                                        "format": "int32",
+                                        "minimum": 0,
+                                        "maximum": 999
+                                    },
+                                    "distance": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "departureTime": {
+                                        "type": "string",
+                                        "pattern": "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$"
+                                    },
+                                    "arrivalTime": {
+                                        "type": "string",
+                                        "pattern": "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "200 - Flight chartered",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "bidID": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "minimum": 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "400 - Invalid type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "403 - The aircraft is restricted to a rank above the pilots",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "405 - The POST method was not used",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/flights/bookings": {
+            "get": {
+                "summary": "View Bookings",
+                "description": "View all the bookings the pilot has currently made",
+                "responses": {
+                    "200": {
+                        "description": "200 - Get all pilot bookings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "$ref": "#/components/schemas/Flight",
+                                        "nullable": true
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/flights/update": {
+            "post": {
+                "summary": "Update Flight",
+                "description": "UNIMPLEMENTED - Update a booked or created flight",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "bidID",
+                                    "timeRemaining"
+                                ],
+                                "properties": {
+                                    "bidID": {
+                                        "type": "integer",
+                                        "format": "int32",
+                                        "minimum": 0
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": -90,
+                                        "maximum": 90
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": -180,
+                                        "maximum": 180
+                                    },
+                                    "heading": {
+                                        "type": "integer",
+                                        "format": "int32",
+                                        "minimum": 0,
+                                        "maximum": 359
+                                    },
+                                    "altitude": {
+                                        "type": "integer",
+                                        "format": "int32",
+                                        "minimum": -99999,
+                                        "maximum": 99999
+                                    },
+                                    "groundSpeed": {
+                                        "type": "integer",
+                                        "format": "int32",
+                                        "minimum": 0
+                                    },
+                                    "distanceRemaining": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "timeRemaining": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "route": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "pattern": "^((0?[1-9]|[1-2]\\d|3[0-6])[LCR]?)|([A-Z]{5})|([A-Z]{3})|([A-Z]{1-3})$"
+                                        }
+                                    },
+                                    "phase": {
+                                        "type": "string",
+                                        "pattern": "^BOARDING|PUSH_BACK|TAXI|TAKE_OFF|REJECTED_TAKE_OFF|CLIMB_OUT|CLIMB|CRUISE|DESCENT|APPROACH|FINAL|LANDED|GO_AROUND|TAXI_TO_GATE|DEBOARDING|DIVERTED$"
+                                    },
+                                    "network": {
+                                        "type": "string",
+                                        "pattern": "^Offline|VATSIM|PilotEdge|IVAO|POSCON$"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "200 - The flight was updated"
+                    },
+                    "400": {
+                        "description": "400 - Invalid type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "404 - The bid ID is not a booked flight",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "405 - The POST method was not used",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/flights/unbook": {
+            "post": {
+                "summary": "Unbook Flight",
+                "description": "Unbook a booked flight",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "bidID"
+                                ],
+                                "properties": {
+                                    "bidID": {
+                                        "type": "integer",
+                                        "format": "int32",
+                                        "minimum": 0
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "200 - Flight was unbooked"
+                    },
+                    "400": {
+                        "description": "400 - Invalid type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "404 - Flight booking not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "405 - The POST method was not used",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/flights/complete": {
+            "post": {
+                "summary": "Complete Flight",
+                "description": "Complete and file a PIREP for an ongoing flight",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "bidID",
+                                    "remainingLoad",
+                                    "flightTime",
+                                    "landingRate",
+                                    "fuelUsed",
+                                    "flightLog"
+                                ],
+                                "properties": {
+                                    "bidID": {
+                                        "type": "integer",
+                                        "format": "int32",
+                                        "minimum": 0
+                                    },
+                                    "remainingLoad": {
+                                        "type": "integer",
+                                        "format": "int32",
+                                        "minimum": 0
+                                    },
+                                    "flightTime": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "landingRate": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "fuelUsed": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "flightLog": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "comments": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "200 - Flight was successfully finished"
+                    },
+                    "400": {
+                        "description": "400 - Invalid type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "404 - Flight not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "405 - The POST method was not used",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pilot/resume": {
+            "post": {
+                "security": [],
+                "summary": "Pilot Resume Session",
+                "description": "Resume a user session by providing the session ID with the database ID. The session ID may be reset during this transaction",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "session": {
+                                        "type": "string",
+                                        "pattern": "^[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*$"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "200 - Resume a session using a session ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Pilot"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "400 - The session was not provided or was not the correct type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - An incorrect or invalid session was given",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "405 - The POST method was not used",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pilot/login": {
+            "post": {
+                "security": [],
+                "summary": "Pilot Login",
+                "description": "Login to a user account using an email and password. A database ID and session will be provided for resuming a session later",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "username",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The user's username or email",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "password"
+                                ],
+                                "properties": {
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "200 - Successfully logged in to pilot account",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Pilot"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "400 - The username or password was not provided or was not the correct type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - The incorrect password was given",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "404 - The pilot with the username given was not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "405 - The POST method was not used",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "409 - The pilot has not been confirmed into the airline",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pilot/statistics": {
+            "get": {
+                "summary": "Pilot Statistics",
+                "description": "Get the statistics of the pilot who is logged in",
+                "responses": {
+                    "200": {
+                        "description": "200 - Return the users statistics within the Virtual Airline",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "hoursFlown",
+                                        "flightsFlown",
+                                        "averageLandingRate",
+                                        "pirepsFiled"
+                                    ],
+                                    "properties": {
+                                        "hoursFlown": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "minimum": 0
+                                        },
+                                        "flightsFlown": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "minimum": 0
+                                        },
+                                        "averageLandingRate": {
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "pirepsFiled": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "minimum": 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data/airports": {
+            "get": {
+                "summary": "Get Airports",
+                "description": "Get all the available departures and destinations",
+                "responses": {
+                    "200": {
+                        "description": "200 - Return a list of all available airports",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Airport"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data/aircraft": {
+            "get": {
+                "summary": "Get Aircraft",
+                "description": "Get all the available aircraft",
+                "responses": {
+                    "200": {
+                        "description": "200 - Return a list of all available aircraft",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Aircraft"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pireps/search": {
+            "get": {
+                "summary": "Search PIREPs",
+                "description": "Search for PIREPs with the given filters",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "departureAirport",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[A-Z]{4}$"
+                        },
+                        "description": "The ICAO code for the departure airport"
+                    },
+                    {
+                        "in": "query",
+                        "name": "arrivalAirport",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[A-Z]{4}$"
+                        },
+                        "description": "The ICAO code for the departure airport"
+                    },
+                    {
+                        "in": "query",
+                        "name": "startDate",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "description": "The date to start filtering from"
+                    },
+                    {
+                        "in": "query",
+                        "name": "endDate",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "description": "The date to end the filtering"
+                    },
+                    {
+                        "in": "query",
+                        "name": "status",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^Accepted|Pending|Rejected$"
+                        },
+                        "description": "The status of the PIREP to search for"
+                    },
+                    {
+                        "in": "query",
+                        "name": "aircraft",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[A-Z]{1}[A-Z0-9]{1,3}$"
+                        },
+                        "description": "The aircraft used for the PIREP"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 - Return a list of PIREPs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "required": [
+                                            "id",
+                                            "submitDate",
+                                            "airlineCode",
+                                            "number",
+                                            "departureAirport",
+                                            "arrivalAirport",
+                                            "aircraft",
+                                            "status",
+                                            "flightTime",
+                                            "landingRate",
+                                            "fuelUsed"
+                                        ],
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "format": "int32",
+                                                "minimum": 0
+                                            },
+                                            "status": {
+                                                "type": "string",
+                                                "pattern": "^Accepted|Pending|Rejected$"
+                                            },
+                                            "submitDate": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "airlineCode": {
+                                                "type": "string",
+                                                "pattern": "^[A-Z]{3}$"
+                                            },
+                                            "number": {
+                                                "type": "string",
+                                                "pattern": "^[A-Z0-9]{1,}$"
+                                            },
+                                            "departureAirport": {
+                                                "type": "string",
+                                                "pattern": "^[A-Z]{4}$"
+                                            },
+                                            "arrivalAirport": {
+                                                "type": "string",
+                                                "pattern": "^[A-Z]{4}$"
+                                            },
+                                            "aircraft": {
+                                                "type": "string",
+                                                "pattern": "^[A-Z]{1}[A-Z0-9]{1,3}$",
+                                                "nullable": true
+                                            },
+                                            "flightTime": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "minimum": 0
+                                            },
+                                            "landingRate": {
+                                                "type": "number",
+                                                "format": "float"
+                                            },
+                                            "fuelUsed": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "minimum": 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pireps/details": {
+            "get": {
+                "summary": "Get PIREP Details",
+                "description": "Get details for a specific PIREP",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        },
+                        "description": "The PIREP ID to get more detailed information from",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 - Return the PIREP specified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "flightLog"
+                                    ],
+                                    "properties": {
+                                        "flightLog": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "400 - The ID was not provided or was invalid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "404 - The PIREP with this ID was not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Error": {
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            },
+            "UnauthorizedError": {
+                "description": "The access token was missing or is invalid",
+                "type": "object",
+                "$ref": "#/components/schemas/Error"
+            },
+            "Airport": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "code",
+                    "name",
+                    "latitude",
+                    "longitude"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "code": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{4}$"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "format": "float",
+                        "minimum": -90,
+                        "maximum": 90
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "float",
+                        "minimum": -180,
+                        "maximum": 180
+                    }
+                }
+            },
+            "Aircraft": {
+                "type": "object",
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "code": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{1}[A-Z0-9]{1,3}$"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "serviceCeiling": {
+                        "type": "string"
+                    },
+                    "maximumPassengers": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "maximumCargo": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "minimumRank": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Flight": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "code",
+                    "number",
+                    "type",
+                    "departureAirport",
+                    "arrivalAirport",
+                    "aircraft",
+                    "flightLevel",
+                    "distance",
+                    "departureTime",
+                    "arrivalTime",
+                    "flightTime"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "code": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{3}$"
+                    },
+                    "number": {
+                        "type": "string",
+                        "pattern": "^[A-Z0-9]{1,}$"
+                    },
+                    "type": {
+                        "type": "string",
+                        "pattern": "^P|C$"
+                    },
+                    "departureAirport": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{4}$"
+                    },
+                    "arrivalAirport": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{4}$"
+                    },
+                    "route": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "pattern": "^((0?[1-9]|[1-2]\\d|3[0-6])[LCR]?)|([A-Z]{5})|([A-Z]{3})|([A-Z]{1-3})$"
+                        }
+                    },
+                    "aircraft": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{1}[A-Z0-9]{1,3}$"
+                    },
+                    "flightLevel": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0,
+                        "maximum": 999
+                    },
+                    "distance": {
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0
+                    },
+                    "departureTime": {
+                        "type": "string",
+                        "pattern": "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$"
+                    },
+                    "arrivalTime": {
+                        "type": "string",
+                        "pattern": "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$"
+                    },
+                    "flightTime": {
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0
+                    },
+                    "daysOfWeek": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "pattern": "^Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday$"
+                        }
+                    },
+                    "notes": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Pilot": {
+                "type": "object",
+                "required": [
+                    "dbID",
+                    "pilotID",
+                    "firstName",
+                    "lastName",
+                    "email",
+                    "session"
+                ],
+                "properties": {
+                    "dbID": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "pilotID": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{3}[A-Z0-9]{1,}$"
+                    },
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "rank": {
+                        "type": "string"
+                    },
+                    "rankLevel": {
+                        "type": "integer"
+                    },
+                    "avatar": {
+                        "type": "string"
+                    },
+                    "session": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*$"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "session"
+            }
+        }
+    },
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ]
+}
