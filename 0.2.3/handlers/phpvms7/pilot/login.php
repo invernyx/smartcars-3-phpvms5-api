@@ -23,14 +23,14 @@ $user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, p
 
 if($user === array())
 {
-    error(404, 'No pilot exists with username ' . $_GET['username']);
+    error(401, 'The username or password was not correct');
 }
 $airline = $airline[0];
 $rank = $rank[0];
 $user = $user[0];
 
 if(!password_verify($_POST['password'], $user['password'])) {
-    error(401, 'The password was not correct');
+    error(401, 'The username or password was not correct');
 }
 $expiry = time() + 604800;
 $JWTHeader = json_encode(array('typ' => 'JWT', 'alg' => 'HS256'));
