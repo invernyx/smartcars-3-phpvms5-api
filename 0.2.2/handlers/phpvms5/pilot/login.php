@@ -31,7 +31,7 @@ else
 
 if($result === array())
 {
-    error(404, 'No pilot exists with username ' . $_GET['username']);
+    error(401, 'The username or password was not correct');
     exit;
 }
 $result = $result[0];
@@ -48,7 +48,7 @@ if($result['confirmed'] === 0)
 $md5Hash = md5($_POST['password'] . $result['salt']);
 if($md5Hash !== $result['password'])
 {
-    error(401, 'The password was not correct');
+    error(401, 'The username or password was not correct');
     exit;
 }
 $expiry = time() + 604800;
@@ -78,7 +78,7 @@ if(file_exists(webRoot . $avatarFile))
     $url = sprintf(
         "%s://%s",
         isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
-        $_SERVER['SERVER_NAME']        
+        $_SERVER['SERVER_NAME']
       );
     $avatar = $url . $avatarFile;
 }
