@@ -28,7 +28,7 @@ else
 
 if($user === array())
 {
-    error(404, 'No pilot exists with username ' . $_GET['username']);
+    error(401, 'The username or password was not correct');
 }
 $user = $user[0];
 
@@ -39,7 +39,7 @@ $airline = $airline[0];
 $rank = $rank[0];
 
 if(!password_verify($_POST['password'], $user['password'])) {
-    error(401, 'The password was not correct');
+    error(401, 'The username or password was not correct');
 }
 $expiry = time() + 604800;
 $JWTHeader = json_encode(array('typ' => 'JWT', 'alg' => 'HS256'));
