@@ -10,7 +10,7 @@ All versions with a check mark are currently supported.
 | 0.2.2   | :x:                |
 | 0.2.1   | :x:                |
 | 0.2.0   | :x:                |
-| < 2.0   | :x:                |
+| < 0.2.0 | :x:                |
 
 ## Reporting a Vulnerability
 
