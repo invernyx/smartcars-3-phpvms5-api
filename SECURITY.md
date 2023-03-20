@@ -14,4 +14,4 @@ All versions with a check mark are currently supported.
 
 ## Reporting a Vulnerability
 
-All Security vulnurabilities should be sent to the TFDi support team. his can be found at https://support.tfdidesign.com or by clicking issues, new issue and then selecting TFDi support.
+All security vulnerabilities should be reported via the GitHub Security vulnerabilities tab. You can find this tab by going to the [Issues tab](https://github.com/invernyx/smartcars-3-public-api/issues/new/choose) and clicking "Report a security vulnerability" or by going directly to [Opening a draft security advisory](https://github.com/invernyx/smartcars-3-public-api/security/advisories/new)
