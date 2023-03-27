@@ -39,7 +39,7 @@ $data = array(
     'log' => implode('*', $_POST['flightLog'])
 );
 if($_POST['comments'] !== null)
-    $data['comment'] = $_POST['comment'];
+    $data['comment'] = $_POST['comments'];
 else
     $data['comment'] = '';
 
