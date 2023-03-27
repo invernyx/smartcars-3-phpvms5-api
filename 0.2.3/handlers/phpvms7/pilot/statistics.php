@@ -11,7 +11,7 @@ if($pirepStatistics !== array())
     }
 }
 echo(json_encode(array(
-    'hoursFlown' => $pilotStatistics['totalhours'],
+    'hoursFlown' => $pilotStatistics['totalhours'] / 60,
     'flightsFlown' => $pilotStatistics['totalflights'],
     'averageLandingRate' => count($pirepStatistics) > 0 ? round($totalLandingRate/count($pirepStatistics)) : 0,
     'pirepsFiled' => count($pirepStatistics),

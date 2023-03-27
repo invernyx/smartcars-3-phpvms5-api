@@ -5,6 +5,7 @@
 
 $settings = file_get_contents('../env.php');
 
+define('webRoot', dirname(getcwd()));
 define('dbName', explode('\'', explode('DB_DATABASE=\'', $settings)[1])[0]);
 define('dbHost', explode('\'', explode('DB_HOST=\'', $settings)[1])[0]);
 define('dbUsername', explode('\'', explode('DB_USERNAME=\'', $settings)[1])[0]);

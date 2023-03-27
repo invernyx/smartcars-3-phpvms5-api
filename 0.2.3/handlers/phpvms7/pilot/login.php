@@ -17,17 +17,26 @@ if($_POST['password'] === null)
 assertData($_GET, array('username' => 'string'));
 assertData($_POST, array('password' => 'string'));
 
-$airline = $database->fetch('SELECT icao FROM ' . dbPrefix . 'airlines WHERE id=(SELECT airline_id FROM ' . dbPrefix . 'users WHERE email = ?)', array($_GET['username']));
-$rank = $database->fetch('SELECT name FROM ' . dbPrefix . 'ranks WHERE id=(SELECT rank_id FROM ' . dbPrefix . 'users WHERE email = ?)', array($_GET['username']));
-$user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE email=?', array($_GET['username']));
+if(strpos($_GET['username'], '@'))
+{
+    $user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE email=?', array($_GET['username']));
+}
+else
+{
+    $user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE pilot_id=?', array($_GET['username']));
+}
 
 if($user === array())
 {
     error(401, 'The username or password was not correct');
 }
+$user = $user[0];
+
+$airline = $database->fetch('SELECT icao FROM ' . dbPrefix . 'airlines WHERE id=(SELECT airline_id FROM ' . dbPrefix . 'users WHERE id = ?)', array($user['id']));
+$rank = $database->fetch('SELECT name FROM ' . dbPrefix . 'ranks WHERE id=(SELECT rank_id FROM ' . dbPrefix . 'users WHERE id = ?)', array($user['id']));
+
 $airline = $airline[0];
 $rank = $rank[0];
-$user = $user[0];
 
 if(!password_verify($_POST['password'], $user['password'])) {
     error(401, 'The username or password was not correct');
