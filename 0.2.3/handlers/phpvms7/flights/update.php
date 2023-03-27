@@ -61,6 +61,7 @@ $existingFlight = $database->fetch('SELECT id FROM ' . dbPrefix . 'acars WHERE i
 if($existingFlight === array())
 {
     $flightDetails = $database->fetch('SELECT ' .
+    dbPrefix . 'id as flight_id, ' .
     dbPrefix . 'airline_id, ' .
     dbPrefix . 'flight_number, ' .
     dbPrefix . 'route_code, ' .
@@ -86,10 +87,9 @@ if($existingFlight === array())
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, "smartCARS 3", 0, NOW(), NOW())',
     array($flightDetails['flight_id'], $pilotID, $flightDetails['airline_id'], $flightDetails['flight_id'], $flightDetails['flight_number'], $flightDetails['route_code'], $flightDetails['route_leg'], $flightDetails['flight_type'], $flightDetails['dpt_airport_id'], $flightDetails['arr_airport_id'], $flightDetails['alt_airport_id'], $flightDetails['level'], $flightDetails['planned_distance'], $flightDetails['planned_flight_time'], implode(' ', $_POST['route'])));
 
-    $database->execute('INSERT INTO ' . dbPrefix . 'acars (id, pirep_id, type, status, lat, lon, distance, heading, gs, created_at, updated_at) VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, NOW(), NOW())', array($flightDetails['flight_id'], $flightDetails['flight_id'], phaseToStatus($_POST['phase']), $_POST['latitude'], $_POST['longitude'], $_POST['distanceRemaining'], $_POST['heading'], $_POST['groundSpeed']));
+    $database->execute('INSERT INTO ' . dbPrefix . 'acars (id, pirep_id, type, status, lat, lon, distance, heading, altitude, gs, created_at, updated_at) VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())', array($flightDetails['flight_id'], $flightDetails['flight_id'], phaseToStatus($_POST['phase']), $_POST['latitude'], $_POST['longitude'], $_POST['distanceRemaining'], $_POST['heading'], $_POST['altitude'], $_POST['groundSpeed']));
 }
 else {
-
-    // Update the existing flight in the ACARS table
+    $database->execute('UPDATE ' . dbPrefix . 'acars SET status = ?, lat = ?, lon = ?, distance = ?, heading = ?, altitude = ?, gs = ?, updated_at = NOW()', array(phaseToStatus($_POST['phase']), $_POST['latitude'], $_POST['longitude'], $_POST['distanceRemaining'], $_POST['heading'], $_POST['altitude'], $_POST['groundSpeed']));
 }
 ?>
