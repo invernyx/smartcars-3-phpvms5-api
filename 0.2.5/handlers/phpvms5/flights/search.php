@@ -135,6 +135,15 @@ if($_GET['maximumDistance'] !== null)
     $parameters[':maximumDistance'] = $_GET['maximumDistance'];
 }
 
+if(!$whereInQuery)
+{
+    $query .= ' WHERE enabled=1';
+}
+else
+{
+    $query .= ' AND enabled=1';
+}
+
 $query .= ' ORDER BY id DESC LIMIT 100';
 $results = $database->fetch($query, $parameters);
 
