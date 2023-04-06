@@ -1,5 +1,5 @@
 <?php
-// smartCARS 0.2.4 API
+// smartCARS 0.2.5 API
 // This file must be processable by both PHP 5 and PHP 7
 
 header('Content-type: application/json');
