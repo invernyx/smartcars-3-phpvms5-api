@@ -25,4 +25,5 @@ if($airlines === array())
     $database->execute('INSERT INTO ' . dbPrefix . 'airlines (icao, name, active, created_at, updated_at) VALUES (?, "Charter", 0, NOW(), NOW())', array($code));
 }
 
+// Active but not visible flight
 ?>
