@@ -16,7 +16,7 @@ CASE
 END AS status,
 flighttime as flightTime,
 landingrate as landingRate,
-fuelused as fuelUsed FROM ' . dbPrefix . 'pireps WHERE pilotid=:pilotid';
+fuelused as fuelUsed FROM ' . dbPrefix . 'pireps WHERE pilotid=:pilotid ORDER BY submitdate DESC';
 $parameters = array(':pilotid' => $pilotID);
 
 if($_GET['departureAirport'] !== null)
@@ -79,7 +79,7 @@ foreach($results as $index=>$result)
     $flightTime = intval($flightTime[0]) + floatval(round($flightTime[1] / 60, 2));
     $results[$index]['flightTime'] = $flightTime;
     // Correct submission date format
-    $results[$index]['submitDate'] = date(DATE_RFC3339, $result['submitDate']);
+    $results[$index]['submitDate'] = date(DATE_RFC3339, strtotime($result['submitDate']));
 }
 echo(json_encode($results));
 ?>
