@@ -8,7 +8,7 @@ if($pirep === array())
     exit;
 }
 $pirep = $pirep[0];
-$pirep['flightLog'] = explode('*', $pirep['flightLog']);
+$pirep['flightLog'] = str_replace('*', '\n', $pirep['flightLog']);
 $pirep['flightLog'] = explode('\n', $pirep['flightLog']);
 echo(json_encode($pirep));
 ?>
