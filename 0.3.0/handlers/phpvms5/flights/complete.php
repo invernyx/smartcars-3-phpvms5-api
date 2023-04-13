@@ -1,8 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 $database->createTable('smartCARS3_FlightData', 'pilotID int(11) NOT NULL, pirepID int(11) NOT NULL, locations blob NOT NULL, log blob NOT NULL, PRIMARY KEY (pilotID, pirepID)');
 
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
