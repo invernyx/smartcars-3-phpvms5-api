@@ -1,10 +1,16 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+$database->createTable('smartCARS3_FlightData', 'pilotID int(11) NOT NULL, pirepID int(11) NOT NULL, locations blob NOT NULL, log blob NOT NULL, PRIMARY KEY (pilotID, pirepID)');
+
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
     exit;
 }
-assertData($_POST, array('bidID' => 'int', 'remainingLoad' => 'int', 'flightTime' => 'double', 'landingRate' => 'int', 'fuelUsed' => 'float', 'flightLog' => 'array'));
+assertData($_POST, array('bidID' => 'int', 'remainingLoad' => 'int', 'flightTime' => 'double', 'landingRate' => 'int', 'fuelUsed' => 'float', 'flightLog' => 'array', 'flightData' => 'array'));
 
 require_once('../core/common/NavData.class.php');
 require_once('../core/common/ACARSData.class.php');
@@ -49,4 +55,23 @@ if($PIREPSubmission === false)
     error(500, 'Failed submitting PIREP');
     exit;
 }
+
+$pirepID = $database->fetch('SELECT pirepid FROM ' . dbPrefix . 'pireps WHERE pilotid=? ORDER BY submitdate DESC LIMIT 1', array($pilotID));
+if($pirepID === array())
+{
+    error(500, 'Failed submitting PIREP');
+    exit;
+}
+$pirepID = $pirepID[0]['pirepid'];
+
+$locationData = $database->fetch('SELECT heading, latitude, longitude FROM smartCARS3_OngoingFlights WHERE pilotID=? AND bidID=? ORDER BY timestamp DESC', array($pilotID, $_POST['bidID']));
+if($locationData === array())
+{
+    error(500, 'Failed fetching flight data');
+    exit;
+}
+
+$database->execute('INSERT INTO smartCARS3_FlightData (pilotID, pirepID, locations, log) VALUES (?, ?, ?, ?)', array($pilotID, $pirepID, gzencode(json_encode($locationData)), gzencode(json_encode($_POST['flightData']))));
+$database->execute('DELETE FROM smartCARS3_OngoingFlights WHERE pilotID=? AND bidID=?', array($pilotID, $_POST['bidID']));
+echo(json_encode(array('pirepID' => $pirepID)));
 ?>

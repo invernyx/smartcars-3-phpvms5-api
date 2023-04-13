@@ -7,7 +7,7 @@ foreach($aircrafts as $aircraft)
     switch($aircraft['minimumRank'])
     {
         case 0:
-            $aircrafts[$i]['minimumRank'] = 'N/A';
+            $aircrafts[$i]['minimumRank'] = null;
             break;
         default:
             foreach($ranks as $rank)

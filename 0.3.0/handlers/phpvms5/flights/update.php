@@ -1,4 +1,11 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+$database->createTable('smartCARS3_OngoingFlights', 'timestamp TIMESTAMP DEFAULT NOW() NOT NULL, pilotID INT(11) NOT NULL, bidID INT(11) NOT NULL, heading FLOAT NOT NULL, latitude FLOAT NOT NULL, longitude FLOAT NOT NULL, PRIMARY KEY (timestamp, pilotID, bidID)');
+$database->execute('DELETE FROM smartCARS3_OngoingFlights WHERE timestamp < DATE_SUB(NOW(), INTERVAL 18 HOUR)');
+
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
@@ -48,4 +55,6 @@ if($flightUpdate === false)
 {
     error(500, 'Failed updating flight data');
 }
+
+$database->execute('INSERT INTO smartCARS3_OngoingFlights (pilotID, bidID, heading, latitude, longitude) VALUES (?, ?, ?, ?, ?)', array($pilotID, $_POST['bidID'], $_POST['heading'], $_POST['latitude'], $_POST['longitude']));
 ?>

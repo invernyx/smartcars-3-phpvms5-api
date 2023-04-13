@@ -8,7 +8,7 @@ distance,
 flighttype as flightType,
 depicao as departureAirport,
 arricao as arrivalAirport,
-(SELECT icao FROM ' . dbPrefix . 'aircraft WHERE id=aircraft) as aircraft,
+aircraft,
 CASE
     WHEN accepted=0 THEN "Pending"
     WHEN accepted=1 THEN "Accepted"
