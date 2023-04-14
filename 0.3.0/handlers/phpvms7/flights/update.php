@@ -1,4 +1,7 @@
 <?php
+$database->createTable('smartCARS3_OngoingFlights', 'timestamp TIMESTAMP DEFAULT NOW() NOT NULL, pilotID INT(10) NOT NULL, bidID INT(10) NOT NULL, heading FLOAT NOT NULL, latitude FLOAT NOT NULL, longitude FLOAT NOT NULL, PRIMARY KEY (timestamp, pilotID, bidID)');
+$database->execute('DELETE FROM smartCARS3_OngoingFlights WHERE timestamp < DATE_SUB(NOW(), INTERVAL 18 HOUR)');
+
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
@@ -95,4 +98,6 @@ else {
     $pirepID = $pirepID[0]['id'];
     $database->execute('UPDATE ' . dbPrefix . 'acars SET status = ?, lat = ?, lon = ?, distance = ?, heading = ?, altitude = ?, gs = ?, updated_at = NOW() WHERE id=?', array(phaseToStatus($_POST['phase']), $_POST['latitude'], $_POST['longitude'], $_POST['distanceRemaining'], $_POST['heading'], $_POST['altitude'], $_POST['groundSpeed'], $pirepID));
 }
+
+$database->execute('INSERT INTO smartCARS3_OngoingFlights (pilotID, bidID, heading, latitude, longitude) VALUES (?, ?, ?, ?, ?)', array($pilotID, $_POST['bidID'], $_POST['heading'], $_POST['latitude'], $_POST['longitude']));
 ?>
