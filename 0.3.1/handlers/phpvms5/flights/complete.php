@@ -6,7 +6,7 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST')
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
     exit;
 }
-assertData($_POST, array('bidID' => 'int', 'aircraft' => 'int', 'remainingLoad' => 'int', 'flightTime' => 'double', 'landingRate' => 'int', 'fuelUsed' => 'float', 'flightLog' => 'array', 'flightData' => 'array'));
+assertData($_POST, array('bidID' => 'int', 'aircraft' => 'int', 'remainingLoad' => 'int', 'flightTime' => 'double', 'landingRate' => 'int', 'fuelUsed' => 'float', 'route' => 'array', 'flightLog' => 'array', 'flightData' => 'array'));
 
 require_once('../core/common/NavData.class.php');
 require_once('../core/common/ACARSData.class.php');
@@ -23,14 +23,14 @@ if($bids === array())
     error(404, 'There is no ongoing flight');
     exit;
 }
-$route = $database->fetch('SELECT code, flightnum, depicao, arricao, route, aircraft FROM ' . dbPrefix . 'schedules WHERE id=?', array($bids[0]['routeid']));
+$route = $database->fetch('SELECT code, flightnum, depicao, arricao,, aircraft FROM ' . dbPrefix . 'schedules WHERE id=?', array($bids[0]['routeid']));
 $data = array(
     'pilotid' => $pilotID,
     'code' => $route[0]['code'],
     'flightnum' => $route[0]['flightnum'],
     'depicao' => $route[0]['depicao'],
     'arricao' => $route[0]['arricao'],
-    'route' => $route[0]['route'],
+    'route' => implode(' ', $_POST['route']),
     'aircraft' => $route[0]['aircraft'],
     'load' => $_POST['remainingLoad'],
     'flighttime' => sprintf('%02d:%02d', floor($_POST['flightTime']), round(($_POST['flightTime'] - floor($_POST['flightTime'])) * 60)),
@@ -40,9 +40,6 @@ $data = array(
     'source' => 'smartCARS 3',
     'log' => implode('*', $_POST['flightLog'])
 );
-if(isset($_POST['route']) && $_POST['route'] !== null) {
-    $data['route'] = $_POST['route'];
-}
 
 if($_POST['comments'] !== null)
     $data['comment'] = $_POST['comments'];
