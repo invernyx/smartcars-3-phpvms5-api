@@ -40,6 +40,10 @@ $data = array(
     'source' => 'smartCARS 3',
     'log' => implode('*', $_POST['flightLog'])
 );
+if(isset($_POST['route']) && $_POST['route'] !== null) {
+    $data['route'] = $_POST['route'];
+}
+
 if($_POST['comments'] !== null)
     $data['comment'] = $_POST['comments'];
 else
