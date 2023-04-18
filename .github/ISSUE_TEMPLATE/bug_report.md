@@ -24,7 +24,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **System Information (please complete the following information):**
- - Version [e.g. 0.3.0]
+ - Version [e.g. 0.3.1]
  - PHP version: [e.g. 8.0.11]
  - Database version: [e.g. 10.5.12-MariaDB]
  - Webserver version: [e.g. Apache/2.4.51 (Win64) OpenSSL/1.1.1l PHP/8.0.11]

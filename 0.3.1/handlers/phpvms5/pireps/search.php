@@ -80,6 +80,10 @@ foreach($results as $index=>$result)
     $results[$index]['flightTime'] = $flightTime;
     // Correct submission date format
     $results[$index]['submitDate'] = date(DATE_RFC3339, strtotime($result['submitDate']));
+
+    if(is_numeric($result['aircraft'])) {
+        $results[$index]['aircraft'] = intval($result['aircraft']);
+    }
 }
 echo(json_encode($results));
 ?>
