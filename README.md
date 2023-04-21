@@ -17,9 +17,39 @@ If you are running these platforms, you already have the required versions for t
 Download the latest release from the [releases page](https://github.com/invernyx/smartcars-3-public-api/releases).
 
 ### Step 2
-Extract the contents of the zip file to the top level of the platform you are using (for phpVMS 5, the same level as the `core` folder, for phpVMS 7, the same level as the `bootstrap` folder). You may need to create a new folder if one does not exist.
+Follow the instructions based on the platform you're using:
 
-### Step 3
+#### phpVMS v5
+Extract the zip folder contents to the same level as the `core` folder.
+
+#### phpVMS v7 (Offical Download Version)
+Extract the zip folder contents to the same level as the `bootstrap` folder.
+
+#### phpVMS v7 (GitHub Cloned Version)
+Extract the zip folder contents to the `public` folder. Then, modify the `environment.php` file located in the latest version folder to point to the proper location of the `env.php` file, which is typically up a additional directory:
+
+```php
+<?php
+// smartCARS 0.3.1 API
+// phpVMS v7 handler
+// Designed to be run on PHP 7+
+
+$settings = file_get_contents('../../env.php');
+```
+### Step 3 (If using NGINX instead of Apache 2)
+Modify your site configuration file to add a location for `/smartcars` before the `location / {` definition:
+
+```
+location /smartcars {
+    try_files $uri $uri/ /smartcars/api.php?$query_string;
+}
+location / {
+    try_files $uri $uri/ /index.php?$query_string;
+}
+```
+This will force all traffic on the /smartcars to the api.php file, which should give the intended behavior.
+
+### Step 4
 Verify that the installation was successful by visiting the handler file in your browser. You should see a JSON response with the version number of the API and the name of your handler.
 
 Assuming you have placed the platform you are using in your `public_html` folder and your API folder is called `smartcars`:
