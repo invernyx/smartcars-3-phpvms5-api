@@ -47,7 +47,7 @@ location / {
     try_files $uri $uri/ /index.php?$query_string;
 }
 ```
-This will force all traffic on the /smartcars to the api.php file, which should give the intended behavior.
+This will force all traffic on `https://yoursite.com/smartcars` to the api.php file, which should give the intended behavior.
 
 ### Step 4
 Verify that the installation was successful by visiting the handler file in your browser. You should see a JSON response with the version number of the API and the name of your handler.
