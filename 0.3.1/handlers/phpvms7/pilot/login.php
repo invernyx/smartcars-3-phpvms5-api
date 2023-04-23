@@ -19,11 +19,11 @@ assertData($_POST, array('password' => 'string'));
 
 if(strpos($_GET['username'], '@'))
 {
-    $user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE email=?', array($_GET['username']));
+    $user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE LOWER(email)=?', array(strtolower($_GET['username'])));
 }
 else
 {
-    $user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE pilot_id=?', array($_GET['username']));
+    $user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE pilot_id=?', array(preg_replace("/[^0-9]/","",$_GET['username'])));
 }
 
 if($user === array())
