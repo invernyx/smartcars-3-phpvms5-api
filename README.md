@@ -17,37 +17,24 @@ If you are running these platforms, you already have the required versions for t
 Download the latest release from the [releases page](https://github.com/invernyx/smartcars-3-public-api/releases).
 
 ### Step 2
-Follow the instructions based on the platform you're using:
+Follow the instructions for your platform below:
 
-#### phpVMS v5
-Extract the zip folder contents to the same level as the `core` folder.
+<b>phpVMS 5.X</b>
+Extract the contents of the release zip file to an empty folder which is in the same directory as your phpVMS 5 installation (a `core` folder should exist in this directory).
 
-#### phpVMS v7 (Offical Download Version)
-Extract the zip folder contents to the same level as the `bootstrap` folder.
+<b>phpVMS 7.X</b>
+Extract the contents of the release zip file to an empty folder which is in the same directory as your phpVMS 7 installation (a `bootstrap` folder should exist in this directory).
 
-#### phpVMS v7 (GitHub Cloned Version)
-Extract the zip folder contents to the `public` folder. Then, modify the `environment.php` file located in the latest version folder to point to the proper location of the `env.php` file, which is typically up a additional directory:
+### Step 3 (nginx only)
+If you are using nginx as your webserver, you will need to serve the smartCARS API as a seperate location. An example configuration is below:
 
-```php
-<?php
-// smartCARS 0.3.1 API
-// phpVMS v7 handler
-// Designed to be run on PHP 7+
-
-$settings = file_get_contents('../../env.php');
-```
-### Step 3 (If using NGINX instead of Apache 2)
-Modify your site configuration file to add a location for `/smartcars` before the `location / {` definition:
-
-```
-location /smartcars {
+```nginx
+location /smartcars/api {
     try_files $uri $uri/ /smartcars/api.php?$query_string;
 }
-location / {
-    try_files $uri $uri/ /index.php?$query_string;
-}
 ```
-This will force all traffic on `https://yoursite.com/smartcars` to the api.php file, which should give the intended behavior.
+
+You will need to modify this configuration to fit your needs and to point to the correct location.
 
 ### Step 4
 Verify that the installation was successful by visiting the handler file in your browser. You should see a JSON response with the version number of the API and the name of your handler.
