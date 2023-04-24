@@ -20,10 +20,12 @@ Download the latest release from the [releases page](https://github.com/invernyx
 Follow the instructions for your platform below:
 
 <b>phpVMS 5.X</b>
+
 Extract the contents of the release zip file to an empty folder which is in the same directory as your phpVMS 5 installation (a `core` folder should exist in this directory).
 
 <b>phpVMS 7.X</b>
-Extract the contents of the release zip file to an empty folder which is in the same directory as your phpVMS 7 installation (a `bootstrap` folder should exist in this directory).
+
+Extract the contents of the release zip file to an empty folder which is the same directory as your phpVMS 7 installation (a `bootstrap` folder should exist in this directory).
 
 ### Step 3 (nginx only)
 If you are using nginx as your webserver, you will need to serve the smartCARS API as a seperate location. An example configuration is below:
