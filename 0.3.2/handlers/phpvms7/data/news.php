@@ -1,5 +1,5 @@
 <?php
-$news = $database->fetch('SELECT subject as title, body, created_at as postedAt, user_id FROM ' . dbPrefix . 'news LIMIT 1');
+$news = $database->fetch('SELECT subject as title, body, created_at as postedAt, user_id FROM ' . dbPrefix . 'news ORDER BY created_at DESC LIMIT 1');
 if($news !== array()) {
     $news = $news[0];
     $user = $database->fetch('SELECT name FROM ' . dbPrefix . 'users WHERE id = ?', array($news['user_id']));

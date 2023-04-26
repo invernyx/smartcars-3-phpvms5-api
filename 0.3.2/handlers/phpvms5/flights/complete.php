@@ -23,7 +23,7 @@ if($bids === array())
     error(404, 'There is no ongoing flight');
     exit;
 }
-$route = $database->fetch('SELECT code, flightnum, depicao, arricao,, aircraft FROM ' . dbPrefix . 'schedules WHERE id=?', array($bids[0]['routeid']));
+$route = $database->fetch('SELECT code, flightnum, depicao, arricao, aircraft FROM ' . dbPrefix . 'schedules WHERE id=?', array($bids[0]['routeid']));
 $data = array(
     'pilotid' => $pilotID,
     'code' => $route[0]['code'],

@@ -2,6 +2,14 @@
 $database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID)');
 $database->execute('DELETE FROM smartCARS3_Sessions WHERE expiry < ?', array(time()));
 
+function getURL() {
+    return sprintf(
+        "%s://%s",
+        isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+        $_SERVER['SERVER_NAME']
+    );
+}
+
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
@@ -36,7 +44,7 @@ if(count($validSessions) === 0)
 {
     error(401, 'The session given was not valid');
 }
-$result = $database->fetch('SELECT code, pilotid, firstname, lastname, email, rank FROM ' . dbPrefix . 'pilots WHERE pilotid=?', array($session[1]['sub']));
+$result = $database->fetch('SELECT code, pilotid, firstname, lastname, email, rankid FROM ' . dbPrefix . 'pilots WHERE pilotid=?', array($session[1]['sub']));
 if($result === array())
 {
     error(500, 'The session was found, but there was no valid pilot. Please report this to the VA');
@@ -53,16 +61,30 @@ while(strlen($pilotnum) < pilotIDLength)
 }
 $pilotid .= $pilotnum;
 
+$rank = $database->fetch('SELECT rank as name, rankimage FROM ' . dbPrefix . 'ranks WHERE rankid=?', array($result['rankid']));
+if($rank === array())
+{
+    error(500, 'The rank for this pilot does not exist');
+}
+$rank = $rank[0];
+
+$rankImage = null;
+if(strpos($rank['rankimage'], '/') === 0)
+{
+    if(file_exists(webRoot . $rank['rankimage']))
+    {
+        $rankImage = getURL() . $rank['rankimage'];
+    }
+}
+else if ($rank['rankimage'] !== '') {
+    $rankImage = $rank['rankimage'];
+}
+
 $avatar = null;
 $avatarFile = '/lib/avatars/' . $pilotid . '.png';
 if(file_exists(webRoot . $avatarFile))
 {
-    $url = sprintf(
-        "%s://%s",
-        isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
-        $_SERVER['SERVER_NAME']        
-      );
-    $avatar = $url . $avatarFile;
+    $avatar = getURL() . $avatarFile;
 }
 
 echo(json_encode(array(
@@ -71,7 +93,8 @@ echo(json_encode(array(
     'firstName' => $result['firstname'],
     'lastName' => $result['lastname'],
     'email' => $result['email'],
-    'rank' => $result['rank'],
+    'rank' => $rank['name'],
+    'rankImage' => $rankImage,
     'rankLevel' => intval($result['ranklevel']),
     'avatar' => $avatar,
     'session' => $_POST['session']

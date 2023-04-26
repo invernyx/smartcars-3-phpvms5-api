@@ -6,8 +6,8 @@ All versions with a check mark are currently supported.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.3.1   | :white_check_mark: |
-| <0.3.0  | :x:                |
+| 0.3.2   | :white_check_mark: |
+| <0.3.1  | :x:                |
 
 ## Reporting a Vulnerability
 
