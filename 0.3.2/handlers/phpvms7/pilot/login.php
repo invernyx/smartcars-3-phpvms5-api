@@ -33,7 +33,7 @@ if($user === array())
 $user = $user[0];
 
 $airline = $database->fetch('SELECT icao FROM ' . dbPrefix . 'airlines WHERE id=(SELECT airline_id FROM ' . dbPrefix . 'users WHERE id = ?)', array($user['id']));
-$rank = $database->fetch('SELECT name FROM ' . dbPrefix . 'ranks WHERE id=(SELECT rank_id FROM ' . dbPrefix . 'users WHERE id = ?)', array($user['id']));
+$rank = $database->fetch('SELECT name, image_url as rankImage FROM ' . dbPrefix . 'ranks WHERE id=(SELECT rank_id FROM ' . dbPrefix . 'users WHERE id = ?)', array($user['id']));
 
 $airline = $airline[0];
 $rank = $rank[0];
@@ -62,6 +62,18 @@ if($user['avatar'] !== null) {
     );
 }
 
+$rankImage = null;
+if(strpos($rank['rankImage'], '/') === 0)
+{
+    if(file_exists(webRoot . $rank['rankImage']))
+    {
+        $rankImage = getURL() . $rank['rankImage'];
+    }
+}
+else if ($rank['rankImage'] !== null) {
+    $rankImage = $rank['rankImage'];
+}
+
 echo(json_encode(array(
     'dbID' => $user['id'],
     'pilotID' => $airline['icao'] . str_pad($user['pilotid'], 4, "0", STR_PAD_LEFT),
@@ -69,6 +81,7 @@ echo(json_encode(array(
     'lastName' => explode(' ', $user['name'])[1],
     'email' => $user['email'],
     'rank' => $rank['name'],
+    'rankImage' => $rankImage,
     'rankLevel' => 0,
     'avatar' => $avatar,
     'session' => $jwt
