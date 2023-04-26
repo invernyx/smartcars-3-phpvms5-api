@@ -2,14 +2,6 @@
 $database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID)');
 $database->execute('DELETE FROM smartCARS3_Sessions WHERE expiry < ?', array(time()));
 
-function getURL() {
-    return sprintf(
-        "%s://%s",
-        isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
-        $_SERVER['SERVER_NAME']
-    );
-}
-
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
@@ -75,7 +67,11 @@ if(strpos($rank['rankImage'], '/') === 0)
 {
     if(file_exists(webRoot . $rank['rankImage']))
     {
-        $rankImage = getURL() . $rank['rankImage'];
+        $rankImage = sprintf(
+            "%s://%s",
+            isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+            $_SERVER['SERVER_NAME']
+        ) . $rank['rankImage'];
     }
 }
 else if ($rank['rankImage'] !== null) {
