@@ -84,12 +84,7 @@ $avatar = null;
 $avatarFile = '/lib/avatars/' . $pilotid . '.png';
 if(file_exists(webRoot . $avatarFile))
 {
-    $url = sprintf(
-        "%s://%s",
-        isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
-        $_SERVER['SERVER_NAME']        
-      );
-    $avatar = $url . $avatarFile;
+    $avatar = getURL() . $avatarFile;
 }
 
 echo(json_encode(array(
