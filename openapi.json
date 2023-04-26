@@ -1,7 +1,7 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "version": "0.3.1",
+        "version": "0.3.2",
         "title": "smartCARS 3 Public API"
     },
     "paths": {
@@ -448,7 +448,7 @@
         "/flights/update": {
             "post": {
                 "summary": "Update Flight",
-                "description": "UNIMPLEMENTED - Update a booked or created flight",
+                "description": "Update a booked or created flight",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -456,7 +456,16 @@
                                 "type": "object",
                                 "required": [
                                     "bidID",
-                                    "timeRemaining"
+                                    "latitude",
+                                    "longitude",
+                                    "heading",
+                                    "altitude",
+                                    "groundSpeed",
+                                    "distanceRemaining",
+                                    "timeRemaining",
+                                    "route",
+                                    "phase",
+                                    "network"
                                 ],
                                 "properties": {
                                     "bidID": {
@@ -523,6 +532,9 @@
                                     "network": {
                                         "type": "string",
                                         "pattern": "^Offline|VATSIM|PilotEdge|IVAO|POSCON$"
+                                    },
+                                    "uuid": {
+                                        "type": "string"
                                     }
                                 }
                             }
@@ -1642,6 +1654,10 @@
                     "firstName",
                     "lastName",
                     "email",
+                    "rank",
+                    "rankLevel",
+                    "rankImage",
+                    "avatar",
                     "session"
                 ],
                 "properties": {
@@ -1669,6 +1685,10 @@
                     },
                     "rankLevel": {
                         "type": "integer"
+                    },
+                    "rankImage": {
+                        "type": "string",
+                        "nullable": true
                     },
                     "avatar": {
                         "type": "string",

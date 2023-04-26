@@ -17,9 +17,28 @@ If you are running these platforms, you already have the required versions for t
 Download the latest release from the [releases page](https://github.com/invernyx/smartcars-3-public-api/releases).
 
 ### Step 2
-Extract the contents of the zip file to the top level of the platform you are using (for phpVMS 5, the same level as the `core` folder, for phpVMS 7, the same level as the `bootstrap` folder). You may need to create a new folder if one does not exist.
+Follow the instructions for your platform below:
 
-### Step 3
+<b>phpVMS 5.X</b>
+
+Extract the contents of the release zip file to an empty folder which is in the same directory as your phpVMS 5 installation (a `core` folder should exist in this directory).
+
+<b>phpVMS 7.X</b>
+
+Extract the contents of the release zip file to an empty folder which is the same directory as your phpVMS 7 installation (a `bootstrap` folder should exist in this directory).
+
+### Step 3 (nginx only)
+If you are using nginx as your webserver, you will need to serve the smartCARS API as a seperate location. An example configuration is below:
+
+```nginx
+location /smartcars/api {
+    try_files $uri $uri/ /smartcars/api.php?$query_string;
+}
+```
+
+You will need to modify this configuration to fit your needs and to point to the correct location.
+
+### Step 4
 Verify that the installation was successful by visiting the handler file in your browser. You should see a JSON response with the version number of the API and the name of your handler.
 
 Assuming you have placed the platform you are using in your `public_html` folder and your API folder is called `smartcars`:
