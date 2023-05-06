@@ -57,6 +57,10 @@ foreach ($results as $index => $result) {
             break;
     }
 
+    if($result['flightTime'] !== null) {
+        $results[$index]['flightTime'] = floatval($result['flightTime']) / 60;
+    }
+
     if($result['distance'] !== null) {
         $results[$index]['distance'] = floatval($result['distance']);
     }
