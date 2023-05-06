@@ -28,4 +28,5 @@ else {
     $pirep['locationData'] = json_decode(gzdecode($flightData[0]['locations']));
     $pirep['flightData'] = json_decode(gzdecode($flightData[0]['log']));
 }
+echo(json_encode($pirep));
 ?>
