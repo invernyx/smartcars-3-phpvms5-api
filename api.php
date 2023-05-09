@@ -159,7 +159,7 @@ function assertData($source, $data)
 
 if(count($requestURL) > 0)
 {
-    $defaultVersion = '0.3.2';
+    $defaultVersion = '0.3.3';
     $apiVersion = $defaultVersion;
     if(isset($_GET['v']) && $_GET['v'] !== null)
     {
