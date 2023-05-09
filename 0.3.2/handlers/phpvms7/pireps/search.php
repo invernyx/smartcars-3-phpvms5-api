@@ -1,8 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 $query = 'SELECT id,
 created_at as submitDate,
 (SELECT icao FROM ' . dbPrefix . 'airlines WHERE ' . dbPrefix . 'airlines.id=' . dbPrefix . 'pireps.airline_id) as code,
@@ -16,8 +12,57 @@ aircraft_id as aircraft,
 state as status,
 flight_time as flightTime,
 landing_rate as landingRate,
-fuel_used as fuelUsed FROM ' . dbPrefix . 'pireps WHERE user_id=:pilotid ORDER BY submitdate DESC';
+fuel_used as fuelUsed FROM ' . dbPrefix . 'pireps WHERE user_id=:pilotid';
 $parameters = array(':pilotid' => $pilotID);
+
+if($_GET['departureAirport'] !== null)
+{
+    assertData($_GET, array('departureAirport' => 'airport'));
+    $query .= ' AND dpt_airport_id = :departureAirport';
+    $parameters[':departureAirport'] = $_GET['departureAirport'];
+}
+if($_GET['arrivalAirport'] !== null)
+{
+    assertData($_GET, array('arrivalAirport' => 'airport'));
+    $query .= ' AND arr_airport_id = :arrivalAirport';
+    $parameters[':arrivalAirport'] = $_GET['arrivalAirport'];
+}
+if($_GET['startDate'] !== null)
+{
+    assertData($_GET, array('startDate' => 'date'));
+    $query .= ' AND created_at >= :startDate';
+    $parameters[':startDate'] = $_GET['startDate'];
+}
+if($_GET['endDate'] !== null)
+{
+    assertData($_GET, array('endDate' => 'date'));
+    $query .= ' AND created_at <= DATE_ADD(:endDate, INTERVAL 1 DAY)';
+    $parameters[':endDate'] = $_GET['endDate'];
+}
+if($_GET['status'] !== null)
+{
+    assertData($_GET, array('status' => 'status'));
+    $query .= ' AND state = :status';
+    switch (strtolower($_GET['status'])) {
+        case 'accepted':
+            $parameters[':status'] = 2;
+            break;
+        case 'pending':
+            $parameters[':status'] = 1;
+            break;
+        case 'rejected':
+            $parameters[':status'] = 6;
+            break;
+    }
+}
+if($_GET['aircraft'] !== null)
+{
+    assertData($_GET, array('aircraft' => 'int'));
+    $query .= ' AND aircraft_id = :aircraft';
+    $parameters[':aircraft'] = $_GET['aircraft'];
+}
+
+$query .= ' ORDER BY submitdate DESC';
 
 $results = $database->fetch($query, $parameters);
 foreach ($results as $index => $result) {
