@@ -10,7 +10,7 @@ flights.level as flightLevel,
 flights.distance,
 flights.dpt_time as departureTime,
 flights.arr_time as arrivalTime,
-CAST(flights.flight_time AS DECIMAL(4,2)) as flightTime,
+flights.flight_time as flightTime,
 flights.days as daysOfWeek,
 flights.notes FROM ' . dbPrefix . 'flights INNER JOIN ' . dbPrefix . 'airlines ON flights.airline_id = airlines.id';
 $parameters = array();
@@ -161,13 +161,17 @@ foreach($results as $index=>$result) {
             break;
     }
 
-    // Clone result index and create a copy for each aircraft
-    $aircraftResults = array();
-    foreach($aircraft as $aircraftIndex=>$aircraftResult) {
-        $aircraftResults[$aircraftIndex] = $results[$index];
-        $aircraftResults[$aircraftIndex]['aircraft'] = (string)$aircraftResult['id'];
-        $returns[] = $aircraftResults[$aircraftIndex];
+    $subfleets = $database->fetch(
+        'SELECT DISTINCT type FROM ' . dbPrefix . 'subfleets
+        LEFT JOIN' . dbPrefix . ' flight_subfleet fs on' . dbPrefix . ' subfleets.id = fs.subfleet_id
+        WHERE fs.flight_id = ?',
+    array($result['id']));
+
+    foreach($subfleets as $subfleet) {
+        $results[$index]['subfleets'][] = $subfleet['type'];
     }
+
+    $returns[] = $results[$index];
 }
 echo(json_encode($returns));
 ?>
