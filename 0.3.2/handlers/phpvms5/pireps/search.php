@@ -16,7 +16,7 @@ CASE
 END AS status,
 flighttime as flightTime,
 landingrate as landingRate,
-fuelused as fuelUsed FROM ' . dbPrefix . 'pireps WHERE pilotid=:pilotid ORDER BY submitdate DESC';
+fuelused as fuelUsed FROM ' . dbPrefix . 'pireps WHERE pilotid=:pilotid';
 $parameters = array(':pilotid' => $pilotID);
 
 if($_GET['departureAirport'] !== null)
@@ -40,7 +40,7 @@ if($_GET['startDate'] !== null)
 if($_GET['endDate'] !== null)
 {
     assertData($_GET, array('endDate' => 'date'));
-    $query .= ' AND submitdate <= :endDate';
+    $query .= ' AND submitdate <= DATE_ADD(:endDate, INTERVAL 1 DAY)';
     $parameters[':endDate'] = $_GET['endDate'];
 }
 if($_GET['status'] !== null)
@@ -61,17 +61,13 @@ if($_GET['status'] !== null)
 }
 if($_GET['aircraft'] !== null)
 {
-    assertData($_GET, array('aircraft' => 'aircraft'));
-    $query .= ' AND aircraft = (SELECT id FROM ' . dbPrefix . 'aircraft WHERE icao=:aircraft)';
+    assertData($_GET, array('aircraft' => 'int'));
+    $query .= ' AND aircraft = :aircraft';
     $parameters[':aircraft'] = $_GET['aircraft'];
 }
+$query .= ' ORDER BY submitdate DESC';
 
 $results = $database->fetch($query, $parameters);
-if(!is_array($results))
-{
-    error(500, 'Unable to search for PIREPs');
-    exit;
-}
 foreach($results as $index=>$result)
 {
     // Correct datetime to digit
