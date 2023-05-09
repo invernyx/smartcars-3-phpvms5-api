@@ -167,7 +167,9 @@ foreach($results as $index=>$result) {
         WHERE fs.flight_id = ?',
     array($result['id']));
 
-    $results[$index]['subfleets'] = $subfleets;
+    foreach($subfleets as $subfleet) {
+        $results[$index]['subfleets'][] = $subfleet['type'];
+    }
 
     $returns[] = $results[$index];
 }
