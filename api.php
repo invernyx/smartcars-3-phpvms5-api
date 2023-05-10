@@ -1,5 +1,5 @@
 <?php
-// smartCARS 0.3.2 API
+// smartCARS 0.3.3 API
 // This file must be processable by both PHP 5 and PHP 7
 
 header('Content-type: application/json');
@@ -159,7 +159,7 @@ function assertData($source, $data)
 
 if(count($requestURL) > 0)
 {
-    $defaultVersion = '0.3.2';
+    $defaultVersion = '0.3.3';
     $apiVersion = $defaultVersion;
     if(isset($_GET['v']) && $_GET['v'] !== null)
     {
