@@ -78,9 +78,15 @@ else if ($rank['rankImage'] !== null) {
     $rankImage = $rank['rankImage'];
 }
 
+$pilotIDPadding = 4;
+$pilotIDSetting = $database->fetch('SELECT value FROM ' . dbPrefix . 'settings WHERE id="pilots_id_length"');
+if($pilotIDSetting !== array()) {
+    $pilotIDPadding = intval($pilotIDSetting[0]['value']);
+}
+
 echo(json_encode(array(
     'dbID' => $user['id'],
-    'pilotID' => $airline['icao'] . str_pad($user['pilotid'], 4, "0", STR_PAD_LEFT),
+    'pilotID' => $airline['icao'] . str_pad($user['pilotid'], $pilotIDPadding, "0", STR_PAD_LEFT),
     'firstName' => explode(' ', $user['name'])[0],
     'lastName' => explode(' ', $user['name'])[1],
     'email' => $user['email'],
