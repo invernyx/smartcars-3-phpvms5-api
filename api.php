@@ -96,7 +96,7 @@ function assertData($source, $data)
                         $valid = true;
                     break;
                 case 'airport':
-                    if(is_string($source[$name]) && preg_match('/[A-Z]{3,4}/mi', $source[$name]))
+                    if(is_string($source[$name]) && preg_match('/[A-Z0-9]{3,4}/mi', $source[$name]))
                         $valid = true;
                     break;
                 case 'airline':
