@@ -50,5 +50,12 @@ if($locationData === array())
 $database->execute('INSERT INTO smartCARS3_FlightData (pilotID, pirepID, locations, log) VALUES (?, ?, ?, ?)', array($pilotID, $pirepID, gzencode(json_encode($locationData)), gzencode(json_encode($_POST['flightData']))));
 $database->execute('DELETE FROM smartCARS3_OngoingFlights WHERE pilotID=? AND bidID=?', array($pilotID, $_POST['bidID']));
 
+$flightAirline = $database->fetch('SELECT airline_id FROM ' . dbPrefix . 'flights WHERE id=?', array($flightID));
+if($flightAirline !== array()) {
+    $flightAirline = $flightAirline[0]['airline_id'];
+    $database->execute('DELETE FROM ' . dbPrefix . 'airlines WHERE id=? AND name="Charter" AND active=0', array($flightAirline));
+}
+$database->execute('DELETE FROM ' . dbPrefix . 'flights WHERE id=? AND notes="smartCARS Charter Flight"', array($flightID));
+
 echo(json_encode(array('pirepID' => $pirepID)));
 ?>
