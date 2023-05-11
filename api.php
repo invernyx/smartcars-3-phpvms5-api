@@ -200,7 +200,7 @@ if(count($requestURL) > 0)
     $authenticate = true;
     if(strtolower($requestURL[1] === 'pilot'))
     {
-        if(strtolower($requestURL[2]) === 'login' || strtolower($requestURL[2] === 'resume'))
+        if(strtolower($requestURL[2]) === 'login' || strtolower($requestURL[2] === 'resume' || strtolower($requestURL[2]) === 'verify'))
         {
             $authenticate = false;
         }
