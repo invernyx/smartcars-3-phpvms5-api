@@ -1,4 +1,19 @@
 <?php
+// CHARTER FLIGHT PRICE COMPONENTS
+
+// PRICE PER PASSENGER
+// This is the price per passenger for a passenger charter flight.
+// Example: $10
+$pricePerPassenger = 10;
+
+// PRICE PER POUND
+// This is the price per pound for a cargo charter flight.
+// Example: $0.10
+$pricePerPound = 0.10;
+
+// WARNING: DO NOT edit any code beyond this point unless you are technically able.
+
+
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
@@ -13,9 +28,19 @@ assertData($_POST, array(
     'route' => 'array',
     'aircraft' => 'int',
     'cruise' => 'int',
+    'type' => 'string',
     'departureTime' => 'string',
-    'arrivalTime' => 'string')
-);
+    'arrivalTime' => 'string'
+));
+
+switch($_POST['type']) {
+    case 'P':
+    case 'C':
+        break;
+    default:
+        error(400, 'Invalid type for type (expected `C` or `P` [Raw Type: `string`])');
+        exit;
+}
 
 function coordinatesToNM($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 3443.92)
 {
@@ -49,6 +74,17 @@ if($departure === array() || $arrival === array())
 $departure = $departure[0];
 $arrival = $arrival[0];
 
+$distance = coordinatesToNM($departure['lat'], $departure['lng'], $arrival['lat'], $arrival['lng']);
+$price;
+switch($_POST['type']) {
+    case 'P':
+        $price = $pricePerPassenger;
+        break;
+    case 'C':
+        $price = $pricePerPound;
+        break;
+}
+
 $database->execute('INSERT INTO ' . dbPrefix . 'schedules
 (code,
 flightnum,
@@ -67,7 +103,7 @@ flighttype,
 timesflown,
 notes,
 enabled) VALUES
-(:code, :number, :dep, :arr, :route, "", :aircraft, :level, :distance, :deptime, :arrtime, :flighttime, 0, "C", 0, "smartCARS Charter Flight", 0)',
+(:code, :number, :dep, :arr, :route, "", :aircraft, :level, :distance, :deptime, :arrtime, :flighttime, :price, :type, 0, "smartCARS Charter Flight", 0)',
 array(
     'code' => $code,
     'number' => substr($_POST['number'], 3),
@@ -76,7 +112,9 @@ array(
     'route' => implode(' ', $_POST['route']),
     'aircraft' => $_POST['aircraft'],
     'level' => $_POST['cruise'],
-    'distance' => coordinatesToNM($departure['lat'], $departure['lng'], $arrival['lat'], $arrival['lng']),
+    'distance' => $distance,
+    'price' => $price,
+    'type' => $_POST['type'],
     'deptime' => $_POST['departureTime'],
     'arrtime' => $_POST['arrivalTime'],
     'flighttime' => abs(strtotime($_POST['arrivalTime']) - strtotime($_POST['departureTime'])) / 3600
