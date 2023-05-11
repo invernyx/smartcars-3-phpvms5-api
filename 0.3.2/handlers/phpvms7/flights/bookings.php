@@ -80,7 +80,7 @@ foreach($schedules as $idx=>$schedule) {
 
     $subfleet = $database->fetch(
         'SELECT DISTINCT aircraft.id as id  FROM ' . dbPrefix . 'aircraft
-        LEFT JOIN ' . dbPrefix . 'flight_subfleet fs ON ' . dbPrefix . 'aircraft.subfleet_id = fs.subfleet_id
+        LEFT JOIN flight_subfleet fs on aircraft.subfleet_id = fs.subfleet_id
         WHERE fs.flight_id = ?
         AND aircraft.status = ?',
     array($schedule['flightID'], 'A'));
