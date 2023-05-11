@@ -162,12 +162,17 @@ foreach($results as $index=>$result) {
     }
 
     // Clone result index and create a copy for each aircraft
-    $aircraftResults = array();
-    foreach($aircraft as $aircraftIndex=>$aircraftResult) {
-        $aircraftResults[$aircraftIndex] = $results[$index];
-        $aircraftResults[$aircraftIndex]['aircraft'] = (string)$aircraftResult['id'];
-        $returns[] = $aircraftResults[$aircraftIndex];
+    $subfleets = $database->fetch(
+        'SELECT DISTINCT type FROM ' . dbPrefix . 'subfleets
+        LEFT JOIN' . dbPrefix . ' flight_subfleet fs on' . dbPrefix . ' subfleets.id = fs.subfleet_id
+        WHERE fs.flight_id = ?',
+    array($result['id']));
+
+    foreach($subfleets as $subfleet) {
+        $results[$index]['subfleets'][] = $subfleet['type'];
     }
+
+    $returns[] = $results[$index];
 }
 echo(json_encode($returns));
 ?>
