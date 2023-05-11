@@ -51,17 +51,6 @@ if($result === array())
 }
 $result = $result[0];
 
-$expiry = time() + 604800;
-$JWTHeader = json_encode(array('typ' => 'JWT', 'alg' => 'HS256'));
-$JWTPayload = json_encode(array('sub' => $result['pilotid'], 'exp' => $expiry));
-$JWTHeader = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTHeader));
-$JWTPayload = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTPayload));
-$JWTSignature = hash_hmac('sha256', $JWTHeader . '.' . $JWTPayload, uniqid('', true), true);
-$JWTSignature = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTSignature));
-$jwt = $JWTHeader . '.' . $JWTPayload . '.' . $JWTSignature;
-
-$database->execute('UPDATE smartCARS3_Sessions SET sessionID=?, expiry=? WHERE pilotID=? AND sessionID=?', array($jwt, $expiry, $result['pilotid'], $_POST['session']));
-
 $dbid = intval($result['pilotid']);
 $pilotid = $result['code'];
 $pilotnum = (string)($dbid + intval(pilotOffset));
@@ -107,6 +96,6 @@ echo(json_encode(array(
     'rankImage' => $rankImage,
     'rankLevel' => intval($result['ranklevel']),
     'avatar' => $avatar,
-    'session' => $jwt
+    'session' => $_POST['session']
 )));
 ?>
