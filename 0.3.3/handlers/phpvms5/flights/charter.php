@@ -103,7 +103,7 @@ flighttype,
 timesflown,
 notes,
 enabled) VALUES
-(:code, :number, :dep, :arr, :route, "", :aircraft, :level, :distance, :deptime, :arrtime, :flighttime, :price, "C", 0, "smartCARS Charter Flight", 0)',
+(:code, :number, :dep, :arr, :route, "", :aircraft, :level, :distance, :deptime, :arrtime, :flighttime, :price, :type, 0, "smartCARS Charter Flight", 0)',
 array(
     'code' => $code,
     'number' => substr($_POST['number'], 3),
@@ -114,6 +114,7 @@ array(
     'level' => $_POST['cruise'],
     'distance' => $distance,
     'price' => $price,
+    'type' => $_POST['type'],
     'deptime' => $_POST['departureTime'],
     'arrtime' => $_POST['arrivalTime'],
     'flighttime' => abs(strtotime($_POST['arrivalTime']) - strtotime($_POST['departureTime'])) / 3600

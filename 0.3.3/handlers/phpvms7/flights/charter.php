@@ -65,6 +65,15 @@ if($departure === array() || $arrival === array())
 $departure = $departure[0];
 $arrival = $arrival[0];
 
+switch($_POST['type']) {
+    case 'P':
+        $_POST['type'] = 'C';
+        break;
+    case 'C':
+        $_POST['type'] = 'H';
+        break;
+}
+
 $database->execute('INSERT INTO ' . dbPrefix . 'flights
 (id,
 airline_id,
@@ -85,7 +94,7 @@ has_bid,
 active,
 visible,
 created_at,
-updated_at) VALUES (:id, :airline, :number, :callsign, :dpt, :arr, :dptTime, :arrTime, :level, :distance, :time, "C", :route, "smartCARS Charter Flight", 127, 1, 1, 0, NOW(), NOW())', array(
+updated_at) VALUES (:id, :airline, :number, :callsign, :dpt, :arr, :dptTime, :arrTime, :level, :distance, :time, :type, :route, "smartCARS Charter Flight", 127, 1, 1, 0, NOW(), NOW())', array(
     'id' => $flightID,
     'airline' => $airline,
     'number' => substr($_POST['number'], 3),
@@ -97,9 +106,10 @@ updated_at) VALUES (:id, :airline, :number, :callsign, :dpt, :arr, :dptTime, :ar
     'level' => $_POST['cruise'],
     'distance' => coordinatesToNM($departure['lat'], $departure['lon'], $arrival['lat'], $arrival['lon']),
     'time' => abs(strtotime($_POST['arrivalTime']) - strtotime($_POST['departureTime'])) / 60,
+    'type' => $_POST['type'],
     'route' => implode(' ', $_POST['route'])
 ));
-$fare = $database->select(dbPrefix . 'fares', 'id', 'WHERE active=1 AND name="smartCARS 3 Charter"');
+$fare = $database->select(dbPrefix . 'fares', 'id', 'WHERE active=1 AND name="smartCARS Charter Flight"');
 if($fare !== array()) {
     $fare = $fare[0]['id'];
     $database->insert(dbPrefix . 'flight_fare', array('flight_id' => $flightID, 'fare_id' => $fare));
