@@ -1,5 +1,5 @@
 <?php
-$database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID)');
+$database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID, sessionID)');
 $database->execute('DELETE FROM smartCARS3_Sessions WHERE expiry < ?', array(time()));
 
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
@@ -60,7 +60,7 @@ $JWTSignature = hash_hmac('sha256', $JWTHeader . '.' . $JWTPayload, uniqid('', t
 $JWTSignature = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTSignature));
 $jwt = $JWTHeader . '.' . $JWTPayload . '.' . $JWTSignature;
 
-$database->execute('UPDATE smartCARS3_Sessions SET sessionID=?, expiry=? WHERE pilotID=? AND sessionID=?', array($jwt, $expiry, $user['pilotid'], $_POST['session']));
+$database->insert('smartCARS3_Sessions', array('pilotID' => $result['pilotid'], 'sessionID' => $jwt, 'expiry' => $expiry));
 
 $avatar = null;
 if($user['avatar'] !== null) {
