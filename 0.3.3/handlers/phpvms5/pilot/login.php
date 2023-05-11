@@ -61,7 +61,6 @@ $JWTPayload = str_replace(array('+', '/', '='), array('-', '_', ''), base64_enco
 $JWTSignature = hash_hmac('sha256', $JWTHeader . '.' . $JWTPayload, uniqid('', true), true);
 $JWTSignature = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTSignature));
 $jwt = $JWTHeader . '.' . $JWTPayload . '.' . $JWTSignature;
-$database->execute('DELETE FROM smartCARS3_Sessions WHERE pilotID=?', array($result['pilotid']));
 $database->insert('smartCARS3_Sessions', array('pilotID' => $result['pilotid'], 'sessionID' => $jwt, 'expiry' => $expiry));
 
 $dbid = intval($result['pilotid']);
