@@ -15,11 +15,13 @@ flights.level as flightLevel,
 flights.distance,
 flights.dpt_time as departureTime,
 flights.arr_time as arrivalTime,
-flights.flight_time as flightTime,
+CAST(flights.flight_time AS DECIMAL(4,2)) as flightTime,
 flights.days as daysOfWeek,
-flights.id as flightID,
 flights.notes FROM ' . dbPrefix . 'bids INNER JOIN ' . dbPrefix . 'flights ON bids.flight_id = flights.id INNER JOIN ' . dbPrefix . 'airlines ON flights.airline_id = airlines.id WHERE ' . dbPrefix . 'bids.user_id=?',
 array($pilotID)
+);
+$aircraft = $database->fetch(
+    'SELECT id FROM ' . dbPrefix . 'aircraft WHERE status = "A"'
 );
 
 foreach($schedules as $idx=>$schedule) {
@@ -78,22 +80,8 @@ foreach($schedules as $idx=>$schedule) {
             break;
     }
 
-    $subfleet = $database->fetch(
-        'SELECT DISTINCT aircraft.id as id  FROM ' . dbPrefix . 'aircraft
-        LEFT JOIN ' . dbPrefix . 'flight_subfleet fs ON ' . dbPrefix . 'aircraft.subfleet_id = fs.subfleet_id
-        WHERE fs.flight_id = ?
-        AND aircraft.status = ?',
-    array($schedule['flightID'], 'A'));
-
-    foreach($subfleet as $aircraft) {
+    foreach($aircraft as $aircraft) {
         $schedules[$idx]['aircraft'][] = $aircraft['id'];
-    }
-
-    if (array_key_exists('aircraft', $schedules[$idx]) && is_iterable($schedules[$idx]['aircraft']) && sizeof($schedules[$idx]['aircraft']) === 1) {
-        $schedules[$idx]['aircraft'] = $schedules[$idx]['aircraft'][0];
-    }
-    if (!array_key_exists('aircraft', $schedules[$idx])) {
-        $schedules[$idx]['aircraft'] = array();
     }
 }
 echo(json_encode($schedules));
