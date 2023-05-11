@@ -1,7 +1,7 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "version": "0.3.2",
+        "version": "0.3.3",
         "title": "smartCARS 3 Public API"
     },
     "paths": {
@@ -289,6 +289,7 @@
                                     "aircraft",
                                     "cruise",
                                     "distance",
+                                    "type",
                                     "departureTime",
                                     "arrivalTime"
                                 ],
@@ -326,6 +327,10 @@
                                         "type": "number",
                                         "format": "float",
                                         "minimum": 0
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "pattern": "^P|C$"
                                     },
                                     "departureTime": {
                                         "type": "string",
@@ -800,11 +805,80 @@
                 }
             }
         },
+        "/pilot/verify": {
+            "post": {
+                "security": [],
+                "summary": "Pilot Verify Session",
+                "description": "Verify a user session by providing the session ID with the database ID",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "session": {
+                                        "type": "string",
+                                        "pattern": "^[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*$"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "200 - Verify a session using a session ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Pilot"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "400 - The session was not provided or was not the correct type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 - An incorrect or invalid session was given",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "405 - The POST method was not used",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/pilot/resume": {
             "post": {
                 "security": [],
                 "summary": "Pilot Resume Session",
-                "description": "Resume a user session by providing the session ID with the database ID. The session ID may be reset during this transaction",
+                "description": "Resume a user session by providing the session ID with the database ID. The session ID will be reset during this transaction",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -1639,6 +1713,13 @@
                         "items": {
                             "type": "string",
                             "pattern": "^Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday$"
+                        }
+                    },
+                    "subfleets": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "pattern": "^[A-Z]{1}[A-Z0-9]{1,3}$"
                         }
                     },
                     "notes": {
