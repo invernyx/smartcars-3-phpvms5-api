@@ -62,7 +62,7 @@ if($_GET['aircraft'] !== null)
     $parameters[':aircraft'] = $_GET['aircraft'];
 }
 
-$query .= ' ORDER BY submitdate DESC';
+$query .= ' ORDER BY submitdate DESC LIMIT 100';
 
 $results = $database->fetch($query, $parameters);
 foreach ($results as $index => $result) {
