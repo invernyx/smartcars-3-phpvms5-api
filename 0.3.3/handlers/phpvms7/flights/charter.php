@@ -13,9 +13,19 @@ assertData($_POST, array(
     'route' => 'array',
     'aircraft' => 'int',
     'cruise' => 'int',
+    'type' => 'string',
     'departureTime' => 'string',
     'arrivalTime' => 'string')
 );
+
+switch($_POST['type']) {
+    case 'P':
+    case 'C':
+        break;
+    default:
+        error(400, 'Invalid type for type (expected `C` or `P` [Raw Type: `string`])');
+        exit;
+}
 
 function coordinatesToNM($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 3443.92)
 {
@@ -89,6 +99,11 @@ updated_at) VALUES (:id, :airline, :number, :callsign, :dpt, :arr, :dptTime, :ar
     'time' => abs(strtotime($_POST['arrivalTime']) - strtotime($_POST['departureTime'])) / 60,
     'route' => implode(' ', $_POST['route'])
 ));
+$fare = $database->select(dbPrefix . 'fares', 'id', 'WHERE active=1 AND name="smartCARS 3 Charter"');
+if($fare !== array()) {
+    $fare = $fare[0]['id'];
+    $database->insert(dbPrefix . 'flight_fare', array('flight_id' => $flightID, 'fare_id' => $fare));
+}
 
 $database->execute('INSERT INTO ' . dbPrefix . 'bids (user_id, flight_id, created_at, updated_at) VALUES (?, ?, NOW(), NOW())', array($pilotID, $flightID));
 echo(json_encode(array('bidID'=>intval($database->getLastInsertID('id')))));

@@ -1,16 +1,15 @@
 <?php
 // CHARTER FLIGHT PRICE COMPONENTS
 
-// PRICE PER MILE
-// This is the cost per mile that the flight travels.
-// Example: $10 per mile. Change according to your requirements.
-$pricePerMile = 10;
+// PRICE PER PASSENGER
+// This is the price per passenger for a passenger charter flight.
+// Example: $10
+$pricePerPassenger = 10;
 
-// PRICE PER PAYLOAD UNIT
-// This is the cost per unit of payload (passenger or cargo).
-// It's measured in kilograms (kgs) or pounds (lbs) depending on your configuration.
-// Example: $5 per kg or lbs. Change according to your requirements.
-$pricePerPayloadUnit = 5;
+// PRICE PER POUND
+// This is the price per pound for a cargo charter flight.
+// Example: $0.10
+$pricePerPound = 0.10;
 
 // WARNING: DO NOT edit any code beyond this point unless you are technically able.
 
@@ -29,10 +28,19 @@ assertData($_POST, array(
     'route' => 'array',
     'aircraft' => 'int',
     'cruise' => 'int',
-    'payload' => 'int',
+    'type' => 'string',
     'departureTime' => 'string',
     'arrivalTime' => 'string'
 ));
+
+switch($_POST['type']) {
+    case 'P':
+    case 'C':
+        break;
+    default:
+        error(400, 'Invalid type for type (expected `C` or `P` [Raw Type: `string`])');
+        exit;
+}
 
 function coordinatesToNM($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 3443.92)
 {
@@ -67,7 +75,15 @@ $departure = $departure[0];
 $arrival = $arrival[0];
 
 $distance = coordinatesToNM($departure['lat'], $departure['lng'], $arrival['lat'], $arrival['lng']);
-
+$price;
+switch($_POST['type']) {
+    case 'P':
+        $price = $pricePerPassenger;
+        break;
+    case 'C':
+        $price = $pricePerPound;
+        break;
+}
 
 $database->execute('INSERT INTO ' . dbPrefix . 'schedules
 (code,
@@ -97,7 +113,7 @@ array(
     'aircraft' => $_POST['aircraft'],
     'level' => $_POST['cruise'],
     'distance' => $distance,
-    'price' => $pricePerMile * $distance + $pricePerPayloadUnit * $_POST['payload'],
+    'price' => $price,
     'deptime' => $_POST['departureTime'],
     'arrtime' => $_POST['arrivalTime'],
     'flighttime' => abs(strtotime($_POST['arrivalTime']) - strtotime($_POST['departureTime'])) / 3600
