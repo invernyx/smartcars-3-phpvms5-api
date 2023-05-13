@@ -1,5 +1,5 @@
 <?php
-$database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID, sessionID)');
+$database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID)');
 $database->execute('DELETE FROM smartCARS3_Sessions WHERE expiry < ?', array(time()));
 
 function getURL() {
