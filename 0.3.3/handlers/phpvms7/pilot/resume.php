@@ -60,7 +60,7 @@ $JWTSignature = hash_hmac('sha256', $JWTHeader . '.' . $JWTPayload, uniqid('', t
 $JWTSignature = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTSignature));
 $jwt = $JWTHeader . '.' . $JWTPayload . '.' . $JWTSignature;
 
-$database->insert('smartCARS3_Sessions', array('pilotID' => $result['pilotid'], 'sessionID' => $jwt, 'expiry' => $expiry));
+$database->insert('smartCARS3_Sessions', array('pilotID' => $user['id'], 'sessionID' => $jwt, 'expiry' => $expiry));
 
 $avatar = null;
 if($user['avatar'] !== null) {
