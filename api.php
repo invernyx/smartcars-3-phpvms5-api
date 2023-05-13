@@ -1,5 +1,5 @@
 <?php
-// smartCARS 0.3.2 API
+// smartCARS 0.3.3 API
 // This file must be processable by both PHP 5 and PHP 7
 
 header('Content-type: application/json');
@@ -96,7 +96,7 @@ function assertData($source, $data)
                         $valid = true;
                     break;
                 case 'airport':
-                    if(is_string($source[$name]) && preg_match('/[A-Z]{3,4}/mi', $source[$name]))
+                    if(is_string($source[$name]) && preg_match('/[A-Z0-9]{3,4}/mi', $source[$name]))
                         $valid = true;
                     break;
                 case 'airline':
@@ -159,7 +159,7 @@ function assertData($source, $data)
 
 if(count($requestURL) > 0)
 {
-    $defaultVersion = '0.3.2';
+    $defaultVersion = '0.3.3';
     $apiVersion = $defaultVersion;
     if(isset($_GET['v']) && $_GET['v'] !== null)
     {
@@ -200,7 +200,7 @@ if(count($requestURL) > 0)
     $authenticate = true;
     if(strtolower($requestURL[1] === 'pilot'))
     {
-        if(strtolower($requestURL[2]) === 'login' || strtolower($requestURL[2] === 'resume'))
+        if(strtolower($requestURL[2]) === 'login' || strtolower($requestURL[2] === 'resume' || strtolower($requestURL[2]) === 'verify'))
         {
             $authenticate = false;
         }

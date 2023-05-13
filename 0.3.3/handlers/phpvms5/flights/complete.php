@@ -23,15 +23,22 @@ if($bids === array())
     error(404, 'There is no ongoing flight');
     exit;
 }
-$route = $database->fetch('SELECT code, flightnum, depicao, arricao, aircraft FROM ' . dbPrefix . 'schedules WHERE id=?', array($bids[0]['routeid']));
+$route = $database->fetch('SELECT code, flightnum, depicao, arricao, aircraft, notes FROM ' . dbPrefix . 'schedules WHERE id=?', array($bids[0]['routeid']));
+if($route === array())
+{
+    error(404, 'There is no ongoing flight');
+    exit;
+}
+$route = $route[0];
+
 $data = array(
     'pilotid' => $pilotID,
-    'code' => $route[0]['code'],
-    'flightnum' => $route[0]['flightnum'],
-    'depicao' => $route[0]['depicao'],
-    'arricao' => $route[0]['arricao'],
+    'code' => $route['code'],
+    'flightnum' => $route['flightnum'],
+    'depicao' => $route['depicao'],
+    'arricao' => $route['arricao'],
     'route' => implode(' ', $_POST['route']),
-    'aircraft' => $route[0]['aircraft'],
+    'aircraft' => $route['aircraft'],
     'load' => $_POST['remainingLoad'],
     'flighttime' => sprintf('%02d:%02d', floor($_POST['flightTime']), round(($_POST['flightTime'] - floor($_POST['flightTime'])) * 60)),
     'landingrate' => $_POST['landingRate'],
@@ -66,6 +73,15 @@ if($locationData === array())
 {
     error(500, 'Failed fetching flight data');
     exit;
+}
+
+if($route['notes'] === 'smartCARS Charter Flight') {
+    $database->execute('DELETE FROM ' . dbPrefix . 'schedules WHERE id=?', array($bids[0]['routeid']));
+    $charterFlights = $database->fetch('SELECT id FROM ' . dbPrefix . 'schedules WHERE code=? AND notes="smartCARS Charter Flight"', array($route['code']));
+    if($charterFlights === array())
+    {
+        $database->execute('DELETE FROM ' . dbPrefix . 'airlines WHERE code=? AND name="Charter" AND enabled=0', array($route['code']));
+    }
 }
 
 $database->execute('INSERT INTO smartCARS3_FlightData (pilotID, pirepID, locations, log) VALUES (?, ?, ?, ?)', array($pilotID, $pirepID, gzencode(json_encode($locationData)), gzencode(json_encode($_POST['flightData']))));

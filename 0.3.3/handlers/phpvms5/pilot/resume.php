@@ -1,5 +1,5 @@
 <?php
-$database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID)');
+$database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID, sessionID)');
 $database->execute('DELETE FROM smartCARS3_Sessions WHERE expiry < ?', array(time()));
 
 function getURL() {
@@ -51,6 +51,16 @@ if($result === array())
 }
 $result = $result[0];
 
+$expiry = time() + 604800;
+$JWTHeader = json_encode(array('typ' => 'JWT', 'alg' => 'HS256'));
+$JWTPayload = json_encode(array('sub' => $result['pilotid'], 'exp' => $expiry));
+$JWTHeader = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTHeader));
+$JWTPayload = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTPayload));
+$JWTSignature = hash_hmac('sha256', $JWTHeader . '.' . $JWTPayload, uniqid('', true), true);
+$JWTSignature = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTSignature));
+$jwt = $JWTHeader . '.' . $JWTPayload . '.' . $JWTSignature;
+
+$database->insert('smartCARS3_Sessions', array('pilotID' => $result['pilotid'], 'sessionID' => $jwt, 'expiry' => $expiry));
 
 $dbid = intval($result['pilotid']);
 $pilotid = $result['code'];
@@ -97,6 +107,6 @@ echo(json_encode(array(
     'rankImage' => $rankImage,
     'rankLevel' => intval($result['ranklevel']),
     'avatar' => $avatar,
-    'session' => $_POST['session']
+    'session' => $jwt
 )));
 ?>

@@ -34,7 +34,7 @@ if($aircraft === array())
 $database->execute('DELETE FROM ' . dbPrefix . 'acars WHERE id=?', array($pirepID));
 $database->execute('DELETE FROM ' . dbPrefix . 'bids WHERE flight_id=? AND user_id=?', array($flightID, $pilotID));
 
-$database->execute('UPDATE ' . dbPrefix . 'pireps SET aircraft_id=?, zfw=?, flight_time=?, landing_rate=?, fuel_used=?, notes=?, status=0, updated_at=NOW(), route=? WHERE id=? AND user_id=?', array($_POST['aircraft'], $_POST['remainingLoad'], $_POST['flightTime'], $_POST['landingRate'], $_POST['fuelUsed'], $_POST['comments'], implode(' ', $_POST['route']), $pirepID, $pilotID));
+$database->execute('UPDATE ' . dbPrefix . 'pireps SET aircraft_id=?, zfw=?, flight_time=?, landing_rate=?, fuel_used=?, notes=?, status=0, updated_at=NOW(), route=? WHERE id=? AND user_id=?', array($_POST['aircraft'], $_POST['remainingLoad'], $_POST['flightTime'] * 60, $_POST['landingRate'], $_POST['fuelUsed'], $_POST['comments'], implode(' ', $_POST['route']), $pirepID, $pilotID));
 
 foreach($_POST['flightLog'] as $flightLogEntry)
 {
@@ -49,6 +49,13 @@ if($locationData === array())
 }
 $database->execute('INSERT INTO smartCARS3_FlightData (pilotID, pirepID, locations, log) VALUES (?, ?, ?, ?)', array($pilotID, $pirepID, gzencode(json_encode($locationData)), gzencode(json_encode($_POST['flightData']))));
 $database->execute('DELETE FROM smartCARS3_OngoingFlights WHERE pilotID=? AND bidID=?', array($pilotID, $_POST['bidID']));
+
+$flightAirline = $database->fetch('SELECT airline_id FROM ' . dbPrefix . 'flights WHERE id=?', array($flightID));
+if($flightAirline !== array()) {
+    $flightAirline = $flightAirline[0]['airline_id'];
+    $database->execute('DELETE FROM ' . dbPrefix . 'airlines WHERE id=? AND name="Charter" AND active=0', array($flightAirline));
+}
+$database->execute('DELETE FROM ' . dbPrefix . 'flights WHERE id=? AND notes="smartCARS Charter Flight"', array($flightID));
 
 echo(json_encode(array('pirepID' => $pirepID)));
 ?>

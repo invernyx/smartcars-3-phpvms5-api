@@ -1,5 +1,5 @@
 <?php
-$database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID)');
+$database->createTable('smartCARS3_Sessions', 'pilotID int(11) NOT NULL, sessionID varchar(256) NOT NULL, expiry int(11) NOT NULL, PRIMARY KEY(pilotID, sessionID)');
 $database->execute('DELETE FROM smartCARS3_Sessions WHERE expiry < ?', array(time()));
 
 if($_SERVER['REQUEST_METHOD'] !== 'POST')
@@ -77,9 +77,15 @@ else if ($rank['rankImage'] !== null) {
     $rankImage = $rank['rankImage'];
 }
 
+$pilotIDPadding = 4;
+$pilotIDSetting = $database->fetch('SELECT value FROM ' . dbPrefix . 'settings WHERE id="pilots_id_length"');
+if($pilotIDSetting !== array()) {
+    $pilotIDPadding = intval($pilotIDSetting[0]['value']);
+}
+
 echo(json_encode(array(
     'dbID' => $user['id'],
-    'pilotID' => $airline['icao'] . str_pad($user['pilotid'], 4, "0", STR_PAD_LEFT),
+    'pilotID' => $airline['icao'] . str_pad($user['pilotid'], $pilotIDPadding, "0", STR_PAD_LEFT),
     'firstName' => explode(' ', $user['name'])[0],
     'lastName' => explode(' ', $user['name'])[1],
     'email' => $user['email'],
