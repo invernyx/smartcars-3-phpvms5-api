@@ -17,7 +17,7 @@ flights.dpt_time as departureTime,
 flights.arr_time as arrivalTime,
 flights.flight_time as flightTime,
 flights.days as daysOfWeek,
-flighs.id as flightID,
+flights.id as flightID,
 flights.notes FROM ' . dbPrefix . 'bids INNER JOIN ' . dbPrefix . 'flights ON bids.flight_id = flights.id INNER JOIN ' . dbPrefix . 'airlines ON flights.airline_id = airlines.id WHERE ' . dbPrefix . 'bids.user_id=?',
 array($pilotID)
 );
