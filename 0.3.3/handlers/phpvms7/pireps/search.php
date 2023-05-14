@@ -1,7 +1,7 @@
 <?php
 $query = 'SELECT id,
 created_at as submitDate,
-(SELECT icao FROM ' . dbPrefix . 'airlines WHERE ' . dbPrefix . 'airlines.id=' . dbPrefix . 'pireps.airline_id) as code,
+(SELECT icao FROM ' . dbPrefix . 'airlines WHERE ' . dbPrefix . 'airlines.id=' . dbPrefix . 'pireps.airline_id) as airlineCode,
 flight_number as number,
 route,
 distance,
