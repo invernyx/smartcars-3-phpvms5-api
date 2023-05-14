@@ -34,7 +34,7 @@ if($aircraft === array())
 $database->execute('DELETE FROM ' . dbPrefix . 'acars WHERE id=?', array($pirepID));
 $database->execute('DELETE FROM ' . dbPrefix . 'bids WHERE flight_id=? AND user_id=?', array($flightID, $pilotID));
 
-$database->execute('UPDATE ' . dbPrefix . 'pireps SET aircraft_id=?, zfw=?, flight_time=?, landing_rate=?, fuel_used=?, notes=?, status=0, submited_at=NOW(), updated_at=NOW(), route=? WHERE id=? AND user_id=?', array($_POST['aircraft'], $_POST['remainingLoad'], $_POST['flightTime'] * 60, $_POST['landingRate'], $_POST['fuelUsed'], $_POST['comments'], implode(' ', $_POST['route']), $pirepID, $pilotID));
+$database->execute('UPDATE ' . dbPrefix . 'pireps SET aircraft_id=?, zfw=?, flight_time=?, landing_rate=?, fuel_used=?, notes=?, status=0, submitted_at=NOW(), updated_at=NOW(), route=? WHERE id=? AND user_id=?', array($_POST['aircraft'], $_POST['remainingLoad'], $_POST['flightTime'] * 60, $_POST['landingRate'], $_POST['fuelUsed'], $_POST['comments'], implode(' ', $_POST['route']), $pirepID, $pilotID));
 
 foreach($_POST['flightLog'] as $flightLogEntry)
 {
