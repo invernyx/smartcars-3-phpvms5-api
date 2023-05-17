@@ -12,7 +12,7 @@ flights.dpt_time as departureTime,
 flights.arr_time as arrivalTime,
 flights.flight_time as flightTime,
 flights.days as daysOfWeek,
-flights.notes FROM ' . dbPrefix . 'flights INNER JOIN ' . dbPrefix . 'airlines ON flights.airline_id = airlines.id';
+flights.notes FROM ' . dbPrefix . 'flights INNER JOIN ' . dbPrefix . 'airlines ON flights.airline_id = airlines.id INNER JOIN ' . dbPrefix . 'flight_subfleet fs ON flights.id = fs.flight_id';
 $parameters = array();
 
 if($_GET['departureAirport'] !== null) {
@@ -29,18 +29,6 @@ if($_GET['arrivalAirport'] !== null) {
     }
     $query .= 'flights.arr_airport_id = :arrivalAirport';
     $parameters[':arrivalAirport'] = $_GET['arrivalAirport'];
-}
-$aircraft;
-if($_GET['aircraft'] !== null) {
-    assertData($_GET, array('aircraft' => 'int'));
-    $aircraft = $database->fetch('SELECT id FROM ' . dbPrefix . 'aircraft WHERE id=?', $_GET['aircraft']);
-    if($aircraft === array()) {
-        error(404, 'Aircraft not found');
-    }
-    $aircraft = $aircraft[0];
-}
-else {
-    $aircraft = $database->fetch('SELECT id FROM ' . dbPrefix . 'aircraft WHERE status = "A"');
 }
 if($_GET['callsign'] !== null) {
     assertData($_GET, array('callsign' => 'string'));
@@ -98,7 +86,26 @@ if($parameters === array()) {
 } else {
     $query .= ' AND ';
 }
-$query .= ' flights.active = 1 AND flights.visible = 1 ORDER BY id DESC LIMIT 100';
+$query .= ' flights.active = 1 AND flights.visible = 1';
+
+$subfleetId;
+if($_GET['aircraft'] !== null) {
+    assertData($_GET, array('aircraft' => 'int'));
+    $subfleet = $database->fetch('SELECT s.id AS id FROM ' . dbPrefix . 'subfleets s LEFT JOIN ' . dbPrefix . ' aircraft a on a.subfleet_id = s.id WHERE a.id = ?', [$_GET['aircraft']]);
+    
+    if ($subfleet === array()) {
+        echo (json_encode([]));
+        return;
+    }
+    $subfleetId = $subfleet[0]['id'];
+}
+
+if ($subfleetId) {
+    $query .= ' AND fs.subfleet_id = :subfleetId';
+    $parameters[':subfleetId'] = $subfleetId;
+}
+
+$query .= ' ORDER BY flights.id DESC LIMIT 100';
 
 $results = $database->fetch($query, $parameters);
 $returns = array();
