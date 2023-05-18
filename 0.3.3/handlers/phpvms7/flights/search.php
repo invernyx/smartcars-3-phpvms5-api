@@ -60,7 +60,7 @@ if($_GET['minimumFlightTime'] !== null) {
         $query .= ' AND ';
     }
     $query .= 'flights.flight_time >= :minimumFlightTime';
-    $parameters[':minimumFlightTime'] = $_GET['minimumFlightTime'];
+    $parameters[':minimumFlightTime'] = $_GET['minimumFlightTime'] * 60;
 }
 if($_GET['maximumFlightTime'] !== null) {
     assertData($_GET, array('maximumFlightTime' => 'int'));
@@ -70,7 +70,7 @@ if($_GET['maximumFlightTime'] !== null) {
         $query .= ' AND ';
     }
     $query .= 'flights.flight_time <= :maximumFlightTime';
-    $parameters[':maximumFlightTime'] = $_GET['maximumFlightTime'];
+    $parameters[':maximumFlightTime'] = $_GET['maximumFlightTime'] * 60;
 }
 if($_GET['minimumDistance'] !== null) {
     assertData($_GET, array('minimumDistance' => 'int'));
