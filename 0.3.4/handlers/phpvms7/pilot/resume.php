@@ -36,7 +36,7 @@ if(count($validSessions) === 0)
 {
     error(401, 'The session given was not valid');
 }
-$user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE pilot_id=?', array($session[1]['sub']));
+$user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE id=?', array($session[1]['sub']));
 if($user === array())
 {
     error(500, 'The session was found, but there was no valid pilot. Please report this to the VA');
