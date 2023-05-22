@@ -1,21 +1,17 @@
 <?php
 // Database library
-// PHP 5
+// PHP 7
 class Database {
     private $connection = null;
 
-    function __construct($databaseName, $databaseHost, $databaseUsername, $databasePassword) {
-        // $databaseName - This is the name of the database that you are connecting to.
-        // $databaseHost - The connection IP, or domain of the database. This will often be "localhost" if the database is running on the same server
-        // $databaseUsername - The username used in order to access the database as a user
-        // $databasePassword - The password used to access the database from the user (specified in $databaseUsername)
-        $connect = new PDO('mysql:dbname=' . $databaseName . ';host=' . $databaseHost . ';charset=utf8', $databaseUsername, $databasePassword);
-        $connect->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-        $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->connection = $connect;
+    function __construct(string $databaseName, string $databaseHost, string $databaseUsername, string $databasePassword) {
+        $connection = new PDO('mysql:dbname=' . $databaseName . ';host=' . $databaseHost . ';charset=utf8', $databaseUsername, $databasePassword);
+        $connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->connection = $connection;
     }
-    
-    public function execute($userQuery, $data=array()) {
+
+    public function execute(string $userQuery, array $data=array()) {
         // execute - This function is used if the query is not present within this database driver. This function will not return any data, but will return true if successful.
         // $userQuery - The PDO query that will be ran to the database. If parsing user data, use question mark as the user fields, and pass their data through the $data variable
         // $data - The user data that will be parsed through PDO. This is an empty array by default.
@@ -26,14 +22,13 @@ class Database {
             } catch (Exception $e ) {
                 return $e;
             }
-            $this->insertID = $this->connection->lastInsertID();
             $query->closeCursor();
             return true;
         }
         return null;
     }
 
-    public function fetch($userQuery, $array=array()) {
+    public function fetch(string $userQuery, array $array=array()) {
         // fetch - This function is similar to execute, however, the data received by the query will be returned by the user in array form, each array being a row.
         // $userQuery - The PDO query that will be ran to the database. If parsing user data, use question mark as the user fields, and pass their data through the $data variable
         // $data - The user data that will be parsed through PDO. This is an empty array by default.
@@ -56,7 +51,7 @@ class Database {
         return null;
     }
 
-    public function createTable($tbl, $vars) {
+    public function createTable(string $tbl, string $vars) {
         // createTable - Create a table if it does not exist
         // $tbl - The name of the table
         // $vars - The variables and their type definitions
@@ -73,7 +68,7 @@ class Database {
         return null;
     }
     
-    public function deleteTable($tbl) {
+    public function deleteTable(string $tbl) {
         // deleteTable - Delete a table if it does exist
         // $tbl - The name of the table
         if ($this->connection != null) {
@@ -89,7 +84,7 @@ class Database {
         return null;
     }
     
-    public function insert($tbl, $data, $extra='') {
+    public function insert(string $tbl, array $data, string $extra='') {
         // insert - Insert a value in a table
         // $tbl - The name of the table
         // $data - A dictionary of data to be inserted into the database, the key being the field and the value being the data inserted
@@ -128,7 +123,7 @@ class Database {
         return null;
     }
 
-    public function replace($tbl, $data, $extra='') {
+    public function replace(string $tbl, array $data, string $extra='') {
         // replace - Replace a value from a table
         // $tbl - The name of the table
         // $data - A dictionary of data to be inserted into the database, the key being the field and the value being the data inserted
@@ -167,7 +162,7 @@ class Database {
         return null;
     }
     
-    public function select($tbl, $fields='*', $extra='') {
+    public function select(string $tbl, string $fields='*', string $extra='') {
         // select - Select values from a table
         // $tbl - The name of the table
         // $fields - The fields to be selected, '*' by default
@@ -191,7 +186,7 @@ class Database {
         return null;
     }
 
-    public function getLastInsertID($sequence = null) {
+    public function getLastInsertID(string $sequence = null) {
         return $this->connection->lastInsertId($sequence);
     }
 }
