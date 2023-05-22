@@ -6,60 +6,49 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
 }
-if($_POST['session'] === null)
+if($_GET['username'] === null)
 {
-    error(400, 'Session is a required field (type `string`)');
+    error(400, 'Username is a required parameter (type `string`)');
 }
-assertData($_POST, array('session' => 'string'));
+if($_POST['password'] === null)
+{
+    error(400, 'Password is a required field (type `string`)');
+}
+assertData($_GET, array('username' => 'string'));
+assertData($_POST, array('password' => 'string'));
 
-$session = explode('.', $_POST['session']);
-if(count($session) !== 3)
+if(strpos($_GET['username'], '@'))
 {
-    error(400, 'The session provided was not in valid JWT format');
+    $user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE email=?', array($_GET['username']));
 }
-$session[0] = json_decode(base64_decode(str_replace(array('-', '_', ''), array('+', '/', '='), $session[0])), true);
-$session[1] = json_decode(base64_decode(str_replace(array('-', '_', ''), array('+', '/', '='), $session[1])), true);
-if($session[0] === null || $session[1] === null)
+else
 {
-    error(400, 'The session provided was not in valid JWT format');
+    $user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE pilot_id=?', array($_GET['username']));
 }
-if($session[0]['alg'] !== 'HS256' || $session[0]['typ'] !== 'JWT')
-{
-    error(401, 'The session given was not signed by this website');
-}
-if($session[1]['sub'] === null || $session[1]['exp'] === null)
-{
-    error(401, 'The session given was not signed by this website');
-}
-$validSessions = $database->fetch('SELECT sessionID FROM smartCARS3_Sessions WHERE pilotID=? AND expiry=? AND sessionID=?', array($session[1]['sub'], $session[1]['exp'], $_POST['session']));
-if(count($validSessions) === 0)
-{
-    error(401, 'The session given was not valid');
-}
-$user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE pilot_id=?', array($session[1]['sub']));
+
 if($user === array())
 {
-    error(500, 'The session was found, but there was no valid pilot. Please report this to the VA');
+    error(401, 'The username or password was not correct');
 }
 $user = $user[0];
+
 $airline = $database->fetch('SELECT icao FROM ' . dbPrefix . 'airlines WHERE id=(SELECT airline_id FROM ' . dbPrefix . 'users WHERE id = ?)', array($user['id']));
 $rank = $database->fetch('SELECT name, image_url as rankImage FROM ' . dbPrefix . 'ranks WHERE id=(SELECT rank_id FROM ' . dbPrefix . 'users WHERE id = ?)', array($user['id']));
-if($airline === array() || $rank === array())
-{
-    error(500, 'The session was found, but there was no valid pilot. Please report this to the VA');
-}
+
 $airline = $airline[0];
 $rank = $rank[0];
 
+if(!password_verify($_POST['password'], $user['password'])) {
+    error(401, 'The username or password was not correct');
+}
 $expiry = time() + 604800;
 $JWTHeader = json_encode(array('typ' => 'JWT', 'alg' => 'HS256'));
-$JWTPayload = json_encode(array('sub' => $user['pilotid'], 'exp' => $expiry));
+$JWTPayload = json_encode(array('sub' => $user['id'], 'exp' => $expiry));
 $JWTHeader = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTHeader));
 $JWTPayload = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTPayload));
 $JWTSignature = hash_hmac('sha256', $JWTHeader . '.' . $JWTPayload, uniqid('', true), true);
 $JWTSignature = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTSignature));
 $jwt = $JWTHeader . '.' . $JWTPayload . '.' . $JWTSignature;
-
 $database->insert('smartCARS3_Sessions', array('pilotID' => $user['id'], 'sessionID' => $jwt, 'expiry' => $expiry));
 
 $avatar = null;
