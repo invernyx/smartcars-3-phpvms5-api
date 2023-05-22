@@ -26,7 +26,6 @@ class Database {
             } catch (Exception $e ) {
                 return $e;
             }
-            $this->insertID = $this->connection->lastInsertID();
             $query->closeCursor();
             return true;
         }
