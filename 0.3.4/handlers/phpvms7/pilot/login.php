@@ -43,7 +43,7 @@ if(!password_verify($_POST['password'], $user['password'])) {
 }
 $expiry = time() + 604800;
 $JWTHeader = json_encode(array('typ' => 'JWT', 'alg' => 'HS256'));
-$JWTPayload = json_encode(array('sub' => $user['pilotid'], 'exp' => $expiry));
+$JWTPayload = json_encode(array('sub' => $user['id'], 'exp' => $expiry));
 $JWTHeader = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTHeader));
 $JWTPayload = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTPayload));
 $JWTSignature = hash_hmac('sha256', $JWTHeader . '.' . $JWTPayload, uniqid('', true), true);
