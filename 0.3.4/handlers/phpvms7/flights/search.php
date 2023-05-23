@@ -1,25 +1,25 @@
 <?php
-$query = 'SELECT flights.id,
-airlines.icao as code,
-flights.flight_number as number,
-flights.flight_type as type,
-flights.dpt_airport_id as departureAirport,
-flights.arr_airport_id as arrivalAirport,
-flights.route,
-flights.level as flightLevel,
-flights.distance,
-flights.dpt_time as departureTime,
-flights.arr_time as arrivalTime,
-flights.flight_time as flightTime,
-flights.days as daysOfWeek,
-flights.notes FROM ' . dbPrefix . 'flights INNER JOIN ' . dbPrefix . 'airlines ON flights.airline_id = airlines.id';
+$query = 'SELECT ' . dbPrefix . 'flights.id,
+' . dbPrefix . 'airlines.icao as code,
+' . dbPrefix . 'flights.flight_number as number,
+' . dbPrefix . 'flights.flight_type as type,
+' . dbPrefix . 'flights.dpt_airport_id as departureAirport,
+' . dbPrefix . 'flights.arr_airport_id as arrivalAirport,
+' . dbPrefix . 'flights.route,
+' . dbPrefix . 'flights.level as flightLevel,
+' . dbPrefix . 'flights.distance,
+' . dbPrefix . 'flights.dpt_time as departureTime,
+' . dbPrefix . 'flights.arr_time as arrivalTime,
+' . dbPrefix . 'flights.flight_time as flightTime,
+' . dbPrefix . 'flights.days as daysOfWeek,
+' . dbPrefix . 'flights.notes FROM ' . dbPrefix . 'flights INNER JOIN ' . dbPrefix . 'airlines ON ' . dbPrefix . 'flights.airline_id = ' . dbPrefix . 'airlines.id';
 $parameters = array();
 
 if($_GET['aircraft'] !== null) {
     assertData($_GET, array('aircraft' => 'int'));
-    $subfleet = $database->fetch('SELECT s.id AS id FROM ' . dbPrefix . 'subfleets s LEFT JOIN ' . dbPrefix . ' aircraft a on a.subfleet_id = s.id WHERE a.id = ?', [$_GET['aircraft']]);
+    $subfleet = $database->fetch('SELECT s.id AS id FROM ' . dbPrefix . 'subfleets s LEFT JOIN ' . dbPrefix . 'aircraft a on a.subfleet_id = s.id WHERE a.id = ?', [$_GET['aircraft']]);
     $query .= ' INNER JOIN ' . dbPrefix . 'flight_subfleet fs ON flights.id = fs.flight_id WHERE fs.subfleet_id = :subfleetId';
-    
+
     if ($subfleet === array()) {
         echo (json_encode([]));
         return;
@@ -30,7 +30,7 @@ if($_GET['aircraft'] !== null) {
 
 if($_GET['departureAirport'] !== null) {
     assertData($_GET, array('departureAirport' => 'airport'));
-    $query .= ' WHERE flights.dpt_airport_id = :departureAirport';
+    $query .= ' WHERE ' . dbPrefix . 'flights.dpt_airport_id = :departureAirport';
     $parameters[':departureAirport'] = $_GET['departureAirport'];
 }
 if($_GET['arrivalAirport'] !== null) {
@@ -40,7 +40,7 @@ if($_GET['arrivalAirport'] !== null) {
     } else {
         $query .= ' AND ';
     }
-    $query .= 'flights.arr_airport_id = :arrivalAirport';
+    $query .= dbPrefix . 'flights.arr_airport_id = :arrivalAirport';
     $parameters[':arrivalAirport'] = $_GET['arrivalAirport'];
 }
 if($_GET['callsign'] !== null) {
@@ -50,7 +50,7 @@ if($_GET['callsign'] !== null) {
     } else {
         $query .= ' AND ';
     }
-    $query .= 'flights.callsign LIKE :callsign';
+    $query .= dbPrefix . 'flights.callsign LIKE :callsign';
     $parameters[':callsign'] = $_GET['callsign'];
 }
 if($_GET['minimumFlightTime'] !== null) {
@@ -60,7 +60,7 @@ if($_GET['minimumFlightTime'] !== null) {
     } else {
         $query .= ' AND ';
     }
-    $query .= 'flights.flight_time >= :minimumFlightTime';
+    $query .= dbPrefix . 'flights.flight_time >= :minimumFlightTime';
     $parameters[':minimumFlightTime'] = $_GET['minimumFlightTime'] * 60;
 }
 if($_GET['maximumFlightTime'] !== null) {
@@ -70,7 +70,7 @@ if($_GET['maximumFlightTime'] !== null) {
     } else {
         $query .= ' AND ';
     }
-    $query .= 'flights.flight_time <= :maximumFlightTime';
+    $query .= dbPrefix . 'flights.flight_time <= :maximumFlightTime';
     $parameters[':maximumFlightTime'] = $_GET['maximumFlightTime'] * 60;
 }
 if($_GET['minimumDistance'] !== null) {
@@ -80,7 +80,7 @@ if($_GET['minimumDistance'] !== null) {
     } else {
         $query .= ' AND ';
     }
-    $query .= 'flights.distance >= :minimumDistance';
+    $query .= dbPrefix . 'flights.distance >= :minimumDistance';
     $parameters[':minimumDistance'] = $_GET['minimumDistance'];
 }
 if($_GET['maximumDistance'] !== null) {
@@ -90,7 +90,7 @@ if($_GET['maximumDistance'] !== null) {
     } else {
         $query .= ' AND ';
     }
-    $query .= 'flights.distance <= :maximumDistance';
+    $query .= dbPrefix . 'flights.distance <= :maximumDistance';
     $parameters[':maximumDistance'] = $_GET['maximumDistance'];
 }
 
@@ -99,7 +99,7 @@ if($parameters === array()) {
 } else {
     $query .= ' AND ';
 }
-$query .= ' flights.active = 1 AND flights.visible = 1 ORDER BY flights.id DESC LIMIT 100';
+$query .= ' ' . dbPrefix . 'flights.active = 1 AND ' . dbPrefix . 'flights.visible = 1 ORDER BY ' . dbPrefix . 'flights.id DESC LIMIT 100';
 
 $results = $database->fetch($query, $parameters);
 $returns = array();
@@ -165,7 +165,7 @@ foreach($results as $index=>$result) {
     // Clone result index and create a copy for each aircraft
     $subfleets = $database->fetch(
         'SELECT DISTINCT type FROM ' . dbPrefix . 'subfleets
-        LEFT JOIN' . dbPrefix . ' flight_subfleet fs on' . dbPrefix . ' subfleets.id = fs.subfleet_id
+        LEFT JOIN ' . dbPrefix . 'flight_subfleet fs on ' . dbPrefix . 'subfleets.id = fs.subfleet_id
         WHERE fs.flight_id = ?',
     array($result['id']));
 

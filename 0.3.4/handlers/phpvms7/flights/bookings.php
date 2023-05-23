@@ -4,21 +4,21 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 $schedules = $database->fetch(
-'SELECT bids.id as bidID,
-airlines.icao as code,
-flights.flight_number as number,
-flights.flight_type as type,
-flights.dpt_airport_id as departureAirport,
-flights.arr_airport_id as arrivalAirport,
-flights.route,
-flights.level as flightLevel,
-flights.distance,
-flights.dpt_time as departureTime,
-flights.arr_time as arrivalTime,
-flights.flight_time as flightTime,
-flights.days as daysOfWeek,
-flights.id as flightID,
-flights.notes FROM ' . dbPrefix . 'bids INNER JOIN ' . dbPrefix . 'flights ON bids.flight_id = flights.id INNER JOIN ' . dbPrefix . 'airlines ON flights.airline_id = airlines.id WHERE ' . dbPrefix . 'bids.user_id=?',
+'SELECT ' . dbPrefix . 'bids.id as bidID,
+' . dbPrefix . 'airlines.icao as code,
+' . dbPrefix . 'flights.flight_number as number,
+' . dbPrefix . 'flights.flight_type as type,
+' . dbPrefix . 'flights.dpt_airport_id as departureAirport,
+' . dbPrefix . 'flights.arr_airport_id as arrivalAirport,
+' . dbPrefix . 'flights.route,
+' . dbPrefix . 'flights.level as flightLevel,
+' . dbPrefix . 'flights.distance,
+' . dbPrefix . 'flights.dpt_time as departureTime,
+' . dbPrefix . 'flights.arr_time as arrivalTime,
+' . dbPrefix . 'flights.flight_time as flightTime,
+' . dbPrefix . 'flights.days as daysOfWeek,
+' . dbPrefix . 'flights.id as flightID,
+' . dbPrefix . 'flights.notes FROM ' . dbPrefix . 'bids INNER JOIN ' . dbPrefix . 'flights ON ' . dbPrefix . 'bids.flight_id = ' . dbPrefix . 'flights.id INNER JOIN ' . dbPrefix . 'airlines ON ' . dbPrefix . 'flights.airline_id = ' . dbPrefix . 'airlines.id WHERE ' . dbPrefix . 'bids.user_id=?',
 array($pilotID)
 );
 $aircraft = $database->fetch(
@@ -82,10 +82,10 @@ foreach($schedules as $idx=>$schedule) {
     }
 
     $subfleet = $database->fetch(
-        'SELECT DISTINCT aircraft.id as id  FROM ' . dbPrefix . 'aircraft
+        'SELECT DISTINCT ' . dbPrefix . 'aircraft.id as id  FROM ' . dbPrefix . 'aircraft
         LEFT JOIN ' . dbPrefix . 'flight_subfleet fs ON ' . dbPrefix . 'aircraft.subfleet_id = fs.subfleet_id
         WHERE fs.flight_id = ?
-        AND aircraft.status = ?',
+        AND ' . dbPrefix . 'aircraft.status = ?',
     array($schedule['flightID'], 'A'));
 
     foreach($subfleet as $aircraft) {
