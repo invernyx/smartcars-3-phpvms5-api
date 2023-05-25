@@ -53,7 +53,7 @@ function phaseToStatus(string $phase): string {
     }
 }
 
-$pirepID = $database->fetch('SELECT ' . dbPrefix . 'pireps.id FROM ' . dbPrefix . 'bids INNER JOIN ' . dbPrefix . 'pireps ON bids.flight_id = pireps.flight_id WHERE ' . dbPrefix . 'bids.id=? AND ' . dbPrefix . 'bids.user_id=?', array($_POST['bidID'], $pilotID));
+$pirepID = $database->fetch('SELECT ' . dbPrefix . 'pireps.id FROM ' . dbPrefix . 'bids INNER JOIN ' . dbPrefix . 'pireps ON ' . dbPrefix . 'bids.flight_id = ' . dbPrefix . 'pireps.flight_id WHERE ' . dbPrefix . 'bids.id=? AND ' . dbPrefix . 'bids.user_id=?', array($_POST['bidID'], $pilotID));
 if($pirepID === array())
 {
     $pirepID = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 16);
@@ -66,18 +66,18 @@ if($pirepID === array())
     $flightID = $flightID[0]['flight_id'];
 
     $flightDetails = $database->fetch('SELECT ' .
-    dbPrefix . 'id as flight_id, ' .
-    dbPrefix . 'airline_id, ' .
-    dbPrefix . 'flight_number, ' .
-    dbPrefix . 'route_code, ' .
-    dbPrefix . 'route_leg, ' .
-    dbPrefix . 'flight_type, ' .
-    dbPrefix . 'dpt_airport_id, ' .
-    dbPrefix . 'arr_airport_id, ' .
-    dbPrefix . 'alt_airport_id, ' .
-    dbPrefix . 'level, ' .
-    dbPrefix . 'distance as planned_distance, ' .
-    dbPrefix . 'flight_time as planned_flight_time
+    'id as flight_id, ' .
+    'airline_id, ' .
+    'flight_number, ' .
+    'route_code, ' .
+    'route_leg, ' .
+    'flight_type, ' .
+    'dpt_airport_id, ' .
+    'arr_airport_id, ' .
+    'alt_airport_id, ' .
+    'level, ' .
+    'distance as planned_distance, ' .
+    'flight_time as planned_flight_time
     FROM ' . dbPrefix . 'flights WHERE id=?', array($flightID));
 
     if($flightDetails === array())
