@@ -22,6 +22,10 @@ if($flightDetails === array())
     error(404, 'There is flight with the specified bid ID');
 }
 $flightDetails = $flightDetails[0];
+$aircraft = $database->fetch('SELECT registration FROM ' . dbPrefix . 'aircraft WHERE id=?', array($flightDetails['aircraft']));
+if($aircraft === array()) {
+    $aircraft = $flightDetails['aircraft'];
+}
 
 require_once('../core/common/NavData.class.php');
 require_once('../core/common/ACARSData.class.php');
@@ -29,7 +33,7 @@ require_once('../core/common/ACARSData.class.php');
 $flightUpdate = ACARSData::UpdateFlightData($pilotID, array(
     'pilotid' => $pilotID,
     'flightnum' => $flightDetails['code'] . $flightDetails['flightnum'],
-    'aircraft' => $flightDetails['aircraft'],
+    'aircraft' => $aircraft,
     'lat' => $_POST['latitude'],
     'lng' => $_POST['longitude'],
     'heading' => $_POST['heading'],
@@ -41,8 +45,8 @@ $flightUpdate = ACARSData::UpdateFlightData($pilotID, array(
     'arrtime' => $flightDetails['arrtime'],
     'route' => implode(' ', $_POST['route']),
     'distremain' => $_POST['distanceRemaining'],
-    'timeremaining' => sprintf('%02d:%02d', floor($_POST['timeRemaining'] / 60), round(($_POST['timeRemaining']) * 60)),
-    'phasedetail' => $_POST['phase'],
+    'timeremaining' => sprintf('%01d:%02d', floor($_POST['timeRemaining']), round($_POST['timeRemaining'] * 60) % 60),
+    'phasedetail' => ucfirst(strtolower(str_replace("_", " ", $_POST['phase']))),
     'online' => $_POST['network'],
     'client' => 'smartCARS 3'
 ));
