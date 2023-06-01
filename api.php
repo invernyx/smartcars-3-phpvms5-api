@@ -1,5 +1,5 @@
 <?php
-// smartCARS 0.3.4 API
+// smartCARS 0.3.5 API
 // This file must be processable by both PHP 5 and PHP 7
 
 header('Content-type: application/json');
@@ -159,7 +159,7 @@ function assertData($source, $data)
 
 if(count($requestURL) > 0)
 {
-    $defaultVersion = '0.3.4';
+    $defaultVersion = '0.3.5';
     $apiVersion = $defaultVersion;
     if(isset($_GET['v']) && $_GET['v'] !== null)
     {
@@ -207,11 +207,20 @@ if(count($requestURL) > 0)
     }
     if($authenticate)
     {
-        $jwtPayload = explode('.', $_SERVER['HTTP_AUTHORIZATION']);
-        $jwt = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',$jwtPayload[1]))), true);
-        $pilotID = $jwt['sub'];
-        $sessionID = explode('Bearer ', $_SERVER['HTTP_AUTHORIZATION']);
-        $sessions = $database->fetch('SELECT sessionID FROM smartCARS3_Sessions WHERE pilotID=? AND sessionID=?', array($jwt['sub'], $sessionID[1]));
+        $sessionID;
+        if($_SERVER['HTTP_AUTHORIZATION'] == '') {
+            $sessionID = $_SERVER['HTTP_SMARTCARS3AUTH'];
+        }
+        else {
+            $sessionID = $_SERVER['HTTP_AUTHORIZATION'];
+        }
+        $sessionID = explode('Bearer ', $sessionID);
+        $sessionID = $sessionID[1];
+        
+        $jwt = explode('.', $sessionID);
+        $payload = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',$jwt[1]))), true);
+        $pilotID = $payload['sub'];
+        $sessions = $database->fetch('SELECT sessionID FROM smartCARS3_Sessions WHERE pilotID=? AND sessionID=?', array($pilotID, $sessionID));
         if($sessions === array())
         {
             error(401, 'The session provided is not valid');

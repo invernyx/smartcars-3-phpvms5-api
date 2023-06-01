@@ -25,7 +25,7 @@ Extract the contents of the release zip file to an empty folder which is in the 
 
 <b>phpVMS 7.X</b>
 
-Extract the contents of the release zip file to an empty folder which is the same directory as your phpVMS 7 installation (a `bootstrap` folder should exist in this directory).
+Extract the contents of the release zip file to an empty folder which is the same directory as your phpVMS 7 `public` folder.
 
 ### Step 3 (nginx only)
 If you are using nginx as your webserver, you will need to serve the smartCARS API as a seperate location. An example configuration is below:
