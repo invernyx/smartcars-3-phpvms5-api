@@ -6,7 +6,27 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST')
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
     exit;
 }
-assertData($_POST, array('bidID' => 'int', 'aircraft' => 'int', 'remainingLoad' => 'int', 'flightTime' => 'double', 'landingRate' => 'int', 'fuelUsed' => 'float', 'route' => 'array', 'flightLog' => 'array', 'flightData' => 'array'));
+assertData($_POST, array('bidID' => 'int', 'aircraft' => 'int', 'remainingLoad' => 'int', 'flightTime' => 'double', 'landingRate' => 'int', 'fuelUsed' => 'float', 'route' => 'array', 'flightLog' => 'string', 'flightData' => 'string'));
+$_POST['flightLog'] = base64_decode($_POST['flightLog']);
+if($_POST['flightLog'] === false)
+{
+    error(400, 'Invalid flight log');
+    exit;
+}
+$_POST['flightLog'] = explode("\n", $_POST['flightLog']);
+
+$_POST['flightData'] = base64_decode($_POST['flightData']);
+if($_POST['flightData'] === false)
+{
+    error(400, 'Invalid flight data');
+    exit;
+}
+$_POST['flightData'] = json_decode($_POST['flightData'], true);
+if($_POST['flightData'] === null)
+{
+    error(400, 'Invalid flight data');
+    exit;
+}
 
 require_once('../core/common/NavData.class.php');
 require_once('../core/common/ACARSData.class.php');

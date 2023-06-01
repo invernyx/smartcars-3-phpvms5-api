@@ -6,7 +6,27 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST')
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
     exit;
 }
-assertData($_POST, array('bidID' => 'int', 'aircraft' => 'int', 'remainingLoad' => 'int', 'flightTime' => 'double', 'landingRate' => 'int', 'fuelUsed' => 'float', 'flightLog' => 'array'));
+assertData($_POST, array('bidID' => 'int', 'aircraft' => 'int', 'remainingLoad' => 'int', 'flightTime' => 'double', 'landingRate' => 'int', 'fuelUsed' => 'float', 'flightLog' => 'string', 'flightData' => 'string'));
+$_POST['flightLog'] = base64_decode($_POST['flightLog']);
+if($_POST['flightLog'] === false)
+{
+    error(400, 'Invalid flight log');
+    exit;
+}
+$_POST['flightLog'] = explode("\n", $_POST['flightLog']);
+
+$_POST['flightData'] = base64_decode($_POST['flightData']);
+if($_POST['flightData'] === false)
+{
+    error(400, 'Invalid flight data');
+    exit;
+}
+$_POST['flightData'] = json_decode($_POST['flightData'], true);
+if($_POST['flightData'] === null)
+{
+    error(400, 'Invalid flight data');
+    exit;
+}
 
 $bids = $database->fetch('SELECT flight_id FROM ' . dbPrefix . 'bids WHERE id=? AND user_id=?', array($_POST['bidID'], $pilotID));
 if($bids === array())
@@ -34,7 +54,7 @@ if($aircraft === array())
 $database->execute('DELETE FROM ' . dbPrefix . 'acars WHERE id=?', array($pirepID));
 $database->execute('DELETE FROM ' . dbPrefix . 'bids WHERE flight_id=? AND user_id=?', array($flightID, $pilotID));
 
-$database->execute('UPDATE ' . dbPrefix . 'pireps SET aircraft_id=?, zfw=?, flight_time=?, landing_rate=?, fuel_used=?, notes=?, status=0, submitted_at=NOW(), updated_at=NOW(), route=? WHERE id=? AND user_id=?', array($_POST['aircraft'], $_POST['remainingLoad'], $_POST['flightTime'] * 60, $_POST['landingRate'], $_POST['fuelUsed'], $_POST['comments'], implode(' ', $_POST['route']), $pirepID, $pilotID));
+$database->execute('UPDATE ' . dbPrefix . 'pireps SET aircraft_id=?, zfw=?, flight_time=?, landing_rate=?, fuel_used=?, notes=?, status=0, submitted_at=NOW(), updated_at=NOW(), route=? WHERE id=? AND user_id=?', array($_POST['aircraft'], $_POST['remainingLoad'], $_POST['flightTime'] * 60, round($_POST['landingRate']), $_POST['fuelUsed'], $_POST['comments'], implode(' ', $_POST['route']), $pirepID, $pilotID));
 
 foreach($_POST['flightLog'] as $flightLogEntry)
 {
