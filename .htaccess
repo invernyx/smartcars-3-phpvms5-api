@@ -1,3 +1,4 @@
 RewriteEngine On
+CGIPassAuth On
 RewriteRule .* - [e=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 RewriteRule ^api/([^/]+) api.php

@@ -198,7 +198,7 @@ if(count($requestURL) > 0)
     }
 
     $authenticate = true;
-    if(strtolower($requestURL[1] === 'pilot'))
+    if(strtolower($requestURL[1]) === 'pilot')
     {
         if(strtolower($requestURL[2]) === 'login' || strtolower($requestURL[2] === 'resume' || strtolower($requestURL[2]) === 'verify'))
         {
@@ -207,14 +207,7 @@ if(count($requestURL) > 0)
     }
     if($authenticate)
     {
-        $sessionID;
-        if($_SERVER['HTTP_AUTHORIZATION'] == '') {
-            $sessionID = $_SERVER['HTTP_SMARTCARS3AUTH'];
-        }
-        else {
-            $sessionID = $_SERVER['HTTP_AUTHORIZATION'];
-        }
-        $sessionID = explode('Bearer ', $sessionID);
+        $sessionID = explode('Bearer ', $_SERVER['HTTP_AUTHORIZATION']);
         $sessionID = $sessionID[1];
         
         $jwt = explode('.', $sessionID);
