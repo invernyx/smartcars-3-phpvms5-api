@@ -6,6 +6,13 @@
 ## Introduction
 smartCARS 3 is a web-based flight tracking system for virtual airlines. It is a complete rewrite of the original smartCARS system, and is designed to be more flexible and easier to use. This repository contains the web script files for smartCARS 3.
 
+## Requirements
+- PHP 5.6 or higher
+- MySQL 5.6 or higher
+- PHP Database Objects (PDO) Extension
+- A webserver that accepts the Authorization header (Apache, nginx, etc.)
+    - If you are using a shared hosting provider, you may need to contact them to enable this feature.
+
 ## Installation
 The smartCARS 3 API has two "handlers", which represent the platforms it is communicating with. We support the following platforms:
 - phpVMS 5.X
