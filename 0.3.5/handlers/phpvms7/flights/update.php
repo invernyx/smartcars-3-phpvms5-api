@@ -54,7 +54,7 @@ function phaseToStatus(string $phase): string {
 }
 
 $pirepID = $database->fetch('SELECT ' . dbPrefix . 'pireps.id FROM ' . dbPrefix . 'bids INNER JOIN ' . dbPrefix . 'pireps ON ' . dbPrefix . 'bids.flight_id = ' . dbPrefix . 'pireps.flight_id WHERE ' . dbPrefix . 'bids.id=? AND ' . dbPrefix . 'bids.user_id=?', array($_POST['bidID'], $pilotID));
-if($pirepID === array())
+if(empty($pirepID))
 {
     $pirepID = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 16);
 
