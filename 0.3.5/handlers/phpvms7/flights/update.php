@@ -89,7 +89,7 @@ if($pirepID === array())
     $database->execute('
     INSERT INTO ' . dbPrefix . 'pireps
     (id, user_id, airline_id, flight_id, flight_number, route_code, route_leg, flight_type, dpt_airport_id, arr_airport_id, alt_airport_id, level, planned_distance, planned_flight_time, route, source, source_name, status, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, "smartCARS 3", 0, NOW(), NOW())',
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, "smartCARS 3", 0, NOW(), NOW())',
     array($pirepID, $pilotID, $flightDetails['airline_id'], $flightDetails['flight_id'], $flightDetails['flight_number'], $flightDetails['route_code'], $flightDetails['route_leg'], $flightDetails['flight_type'], $flightDetails['dpt_airport_id'], $flightDetails['arr_airport_id'], $flightDetails['alt_airport_id'], $flightDetails['level'], $flightDetails['planned_distance'], $flightDetails['planned_flight_time'], implode(' ', $_POST['route'])));
 
     $database->execute('INSERT INTO ' . dbPrefix . 'acars (id, pirep_id, type, status, lat, lon, distance, heading, altitude, gs, created_at, updated_at) VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())', array($pirepID, $pirepID, phaseToStatus($_POST['phase']), $_POST['latitude'], $_POST['longitude'], $_POST['distanceRemaining'], $_POST['heading'], $_POST['altitude'], $_POST['groundSpeed']));
