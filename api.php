@@ -11,6 +11,10 @@ if(!function_exists("http_response_code"))
     }
 }
 
+// Modify both of these to `1` to enable debugging
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS, HEAD');  
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"); 
 header('Access-Control-Allow-Origin: *');

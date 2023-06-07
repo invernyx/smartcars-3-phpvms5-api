@@ -59,7 +59,6 @@ $data = array(
     'arricao' => $route['arricao'],
     'route' => implode(' ', $_POST['route']),
     'aircraft' => $route['aircraft'],
-    'load' => $_POST['remainingLoad'],
     'flighttime' => sprintf('%01d:%02d', floor($_POST['flightTime']), round($_POST['flightTime'] * 60) % 60),
     'landingrate' => round($_POST['landingRate']),
     'submitdate' => date('Y-m-d H:i:s'),
