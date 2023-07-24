@@ -22,10 +22,6 @@ if($flightDetails === array())
     error(404, 'There is flight with the specified bid ID');
 }
 $flightDetails = $flightDetails[0];
-$aircraft = $database->fetch('SELECT registration FROM ' . dbPrefix . 'aircraft WHERE id=?', array($flightDetails['aircraft']));
-if($aircraft === array()) {
-    $aircraft = $flightDetails['aircraft'];
-}
 
 require_once('../core/common/NavData.class.php');
 require_once('../core/common/ACARSData.class.php');
@@ -33,7 +29,6 @@ require_once('../core/common/ACARSData.class.php');
 $flightUpdate = ACARSData::UpdateFlightData($pilotID, array(
     'pilotid' => $pilotID,
     'flightnum' => $flightDetails['code'] . $flightDetails['flightnum'],
-    'aircraft' => $aircraft,
     'lat' => $_POST['latitude'],
     'lng' => $_POST['longitude'],
     'heading' => $_POST['heading'],
