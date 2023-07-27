@@ -540,14 +540,7 @@
                                         "pattern": "^Offline|VATSIM|PilotEdge|IVAO|POSCON$"
                                     },
                                     "aircraft": {
-                                        "oneOf": [
-                                            {
-                                                "type": "integer"
-                                            },
-                                            {
-                                                "type": "string"
-                                            }
-                                        ]
+                                        "type": "integer"
                                     },
                                     "uuid": {
                                         "type": "string"
