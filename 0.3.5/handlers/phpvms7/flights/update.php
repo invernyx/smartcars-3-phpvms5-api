@@ -87,8 +87,8 @@ if($pirepID === array())
     $flightDetails = $flightDetails[0];
 
     $database->execute('INSERT INTO ' . dbPrefix . 'pireps
-    (id, user_id, airline_id, flight_id, flight_number, route_code, route_leg, flight_type, dpt_airport_id, arr_airport_id, alt_airport_id, level, planned_distance, planned_flight_time, route, source, source_name, status, created_at, updated_at)
-    VALUES (:id, :user_id, :airline_id, :flight_id, :flight_number, :route_code, :route_leg, :flight_type, :dpt_airport_id, :arr_airport_id, :alt_airport_id, :level, :planned_distance, :planned_flight_time, :route, :source, :source_name, :status, NOW(), NOW())',
+    (id, user_id, airline_id, flight_id, flight_number, route_code, route_leg, flight_type, dpt_airport_id, arr_airport_id, alt_airport_id, level, planned_distance, planned_flight_time, route, source, source_name, status, aircraft_id, created_at, updated_at)
+    VALUES (:id, :user_id, :airline_id, :flight_id, :flight_number, :route_code, :route_leg, :flight_type, :dpt_airport_id, :arr_airport_id, :alt_airport_id, :level, :planned_distance, :planned_flight_time, :route, :source, :source_name, :status, :aircraft_id, NOW(), NOW())',
     array(
         'id' => $pirepID,
         'user_id' => $pilotID,
@@ -107,7 +107,8 @@ if($pirepID === array())
         'route' => implode(' ', $_POST['route']),
         'source' => 1,
         'source_name' => 'smartCARS 3',
-        'status' => phaseToStatus($_POST['phase'])
+        'status' => phaseToStatus($_POST['phase']),
+        'aircraft_id' => $_POST['aircraft_id']
     ));
 }
 else {
