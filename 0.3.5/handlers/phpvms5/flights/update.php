@@ -6,7 +6,7 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
 }
-assertData($_POST, array('bidID' => 'integer', 'timeRemaining' => 'float', 'latitude' => 'latitude', 'longitude' => 'longitude', 'heading' => 'heading', 'altitude' => 'integer', 'groundSpeed' => 'integer', 'distanceRemaining' => 'integer', 'route' => 'array', 'phase' => 'phase', 'network' => 'network'));
+assertData($_POST, array('bidID' => 'integer', 'timeRemaining' => 'float', 'latitude' => 'latitude', 'longitude' => 'longitude', 'heading' => 'heading', 'altitude' => 'integer', 'groundSpeed' => 'integer', 'distanceRemaining' => 'integer', 'route' => 'array', 'phase' => 'phase', 'network' => 'network', 'aircraft' => 'integer'));
 if($_POST['distanceRemaining'] < 0)
 {
     error(400, 'Distance remaining must be above 0');

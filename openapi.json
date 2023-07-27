@@ -470,7 +470,8 @@
                                     "timeRemaining",
                                     "route",
                                     "phase",
-                                    "network"
+                                    "network",
+                                    "aircraft"
                                 ],
                                 "properties": {
                                     "bidID": {
@@ -537,6 +538,9 @@
                                     "network": {
                                         "type": "string",
                                         "pattern": "^Offline|VATSIM|PilotEdge|IVAO|POSCON$"
+                                    },
+                                    "aircraft": {
+                                        "type": "integer"
                                     },
                                     "uuid": {
                                         "type": "string"
