@@ -114,7 +114,7 @@ if($pirepID === array())
 else {
     $pirepID = $pirepID[0]['id'];
 }
-$database->execute('UPDATE ' . dbPrefix . 'pireps SET status=?, updated_at=NOW() WHERE id=?', array(phaseToStatus($_POST['phase']), $pirepID));
+$database->execute('UPDATE ' . dbPrefix . 'pireps SET state=1, status=?, updated_at=NOW() WHERE id=?', array(phaseToStatus($_POST['phase']), $pirepID));
 
 $database->execute('INSERT INTO ' . dbPrefix . 'acars
 (id, pirep_id, type, status, lat, lon, distance, heading, altitude, gs, created_at, updated_at)
