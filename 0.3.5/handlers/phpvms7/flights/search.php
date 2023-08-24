@@ -99,7 +99,7 @@ if($parameters === array()) {
 } else {
     $query .= ' AND ';
 }
-$query .= ' ' . dbPrefix . 'flights.active = 1 AND ' . dbPrefix . 'flights.visible = 1 ORDER BY ' . dbPrefix . 'flights.id DESC LIMIT 100';
+$query .= ' ' . dbPrefix . 'flights.active = 1 AND ' . dbPrefix . 'flights.visible = 1 ORDER BY (CASE WHEN DATE_SUB(STR_TO_DATE(CONCAT(CURDATE()," ", dpt_time), "%Y-%m-%d %H:%i"), INTERVAL 20 MINUTE) > NOW() THEN STR_TO_DATE(CONCAT(CURDATE()," ", ' . dbPrefix . 'dpt_time), "%Y-%m-%d %H:%i") ELSE STR_TO_DATE(CONCAT(CURDATE() + INTERVAL 1 DAY," ", ' . dbPrefix . 'dpt_time), "%Y-%m-%d %H:%i") END) ASC LIMIT 100';
 
 $results = $database->fetch($query, $parameters);
 $returns = array();

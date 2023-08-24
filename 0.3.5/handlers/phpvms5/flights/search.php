@@ -144,7 +144,7 @@ else
     $query .= ' AND enabled=1';
 }
 
-$query .= ' ORDER BY id DESC LIMIT 100';
+$query .= ' ORDER BY (CASE WHEN DATE_SUB(STR_TO_DATE(CONCAT(CURDATE()," ", deptime), "%Y-%m-%d %H:%i"), INTERVAL 20 MINUTE) > NOW() THEN STR_TO_DATE(CONCAT(CURDATE()," ", deptime), "%Y-%m-%d %H:%i") ELSE STR_TO_DATE(CONCAT(CURDATE() + INTERVAL 1 DAY," ", deptime), "%Y-%m-%d %H:%i") END) ASC LIMIT 100';
 $results = $database->fetch($query, $parameters);
 
 foreach($results as $index=>$result)
