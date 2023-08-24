@@ -12,7 +12,7 @@ aircraft_id as aircraft,
 state as status,
 flight_time as flightTime,
 landing_rate as landingRate,
-fuel_used as fuelUsed FROM ' . dbPrefix . 'pireps WHERE user_id=:pilotid';
+fuel_used as fuelUsed FROM ' . dbPrefix . 'pireps WHERE user_id=:pilotid AND state != 4';
 $parameters = array(':pilotid' => $pilotID);
 
 if($_GET['departureAirport'] !== null)

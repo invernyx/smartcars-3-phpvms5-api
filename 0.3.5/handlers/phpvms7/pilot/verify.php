@@ -36,7 +36,7 @@ if(count($validSessions) === 0)
 {
     error(401, 'The session given was not valid');
 }
-$user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE pilot_id=?', array($session[1]['sub']));
+$user = $database->fetch('SELECT id, pilot_id as pilotid, name, avatar, email, password FROM ' . dbPrefix . 'users WHERE id=?', array($session[1]['sub']));
 if($user === array())
 {
     error(500, 'The session was found, but there was no valid pilot. Please report this to the VA');
@@ -50,17 +50,6 @@ if($airline === array() || $rank === array())
 }
 $airline = $airline[0];
 $rank = $rank[0];
-
-$expiry = time() + 604800;
-$JWTHeader = json_encode(array('typ' => 'JWT', 'alg' => 'HS256'));
-$JWTPayload = json_encode(array('sub' => $user['id'], 'exp' => $expiry));
-$JWTHeader = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTHeader));
-$JWTPayload = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTPayload));
-$JWTSignature = hash_hmac('sha256', $JWTHeader . '.' . $JWTPayload, uniqid('', true), true);
-$JWTSignature = str_replace(array('+', '/', '='), array('-', '_', ''), base64_encode($JWTSignature));
-$jwt = $JWTHeader . '.' . $JWTPayload . '.' . $JWTSignature;
-
-$database->insert('smartCARS3_Sessions', array('pilotID' => $user['id'], 'sessionID' => $jwt, 'expiry' => $expiry));
 
 $avatar = null;
 if($user['avatar'] !== null) {
@@ -104,6 +93,6 @@ echo(json_encode(array(
     'rankImage' => $rankImage,
     'rankLevel' => 0,
     'avatar' => $avatar,
-    'session' => $jwt
+    'session' => $_POST['session']
 )));
 ?>

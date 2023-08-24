@@ -1,5 +1,5 @@
 <?php
-// smartCARS 0.3.4 API
+// smartCARS 0.3.5 API
 // This file must be processable by both PHP 5 and PHP 7
 
 header('Content-type: application/json');
@@ -10,6 +10,10 @@ if(!function_exists("http_response_code"))
         header('X-PHP-Response-Code: ' . $code, true, $code);
     }
 }
+
+// Modify both of these to `1` to enable debugging
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
 
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS, HEAD');  
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"); 
@@ -159,7 +163,7 @@ function assertData($source, $data)
 
 if(count($requestURL) > 0)
 {
-    $defaultVersion = '0.3.4';
+    $defaultVersion = '0.3.5';
     $apiVersion = $defaultVersion;
     if(isset($_GET['v']) && $_GET['v'] !== null)
     {
@@ -198,7 +202,7 @@ if(count($requestURL) > 0)
     }
 
     $authenticate = true;
-    if(strtolower($requestURL[1] === 'pilot'))
+    if(strtolower($requestURL[1]) === 'pilot')
     {
         if(strtolower($requestURL[2]) === 'login' || strtolower($requestURL[2] === 'resume' || strtolower($requestURL[2]) === 'verify'))
         {
@@ -207,11 +211,13 @@ if(count($requestURL) > 0)
     }
     if($authenticate)
     {
-        $jwtPayload = explode('.', $_SERVER['HTTP_AUTHORIZATION']);
-        $jwt = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',$jwtPayload[1]))), true);
-        $pilotID = $jwt['sub'];
         $sessionID = explode('Bearer ', $_SERVER['HTTP_AUTHORIZATION']);
-        $sessions = $database->fetch('SELECT sessionID FROM smartCARS3_Sessions WHERE pilotID=? AND sessionID=?', array($jwt['sub'], $sessionID[1]));
+        $sessionID = $sessionID[1];
+        
+        $jwt = explode('.', $sessionID);
+        $payload = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',$jwt[1]))), true);
+        $pilotID = $payload['sub'];
+        $sessions = $database->fetch('SELECT sessionID FROM smartCARS3_Sessions WHERE pilotID=? AND sessionID=?', array($pilotID, $sessionID));
         if($sessions === array())
         {
             error(401, 'The session provided is not valid');

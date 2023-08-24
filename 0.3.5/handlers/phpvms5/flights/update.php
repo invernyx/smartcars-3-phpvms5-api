@@ -6,7 +6,7 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST')
 {
     error(405, 'POST request method expected, received a ' . $_SERVER['REQUEST_METHOD'] . ' request instead.');
 }
-assertData($_POST, array('bidID' => 'integer', 'timeRemaining' => 'float', 'latitude' => 'latitude', 'longitude' => 'longitude', 'heading' => 'heading', 'altitude' => 'integer', 'groundSpeed' => 'integer', 'distanceRemaining' => 'integer', 'route' => 'array', 'phase' => 'phase', 'network' => 'network'));
+assertData($_POST, array('bidID' => 'integer', 'timeRemaining' => 'float', 'latitude' => 'latitude', 'longitude' => 'longitude', 'heading' => 'heading', 'altitude' => 'integer', 'groundSpeed' => 'integer', 'distanceRemaining' => 'integer', 'route' => 'array', 'phase' => 'phase', 'network' => 'network', 'aircraft' => 'integer'));
 if($_POST['distanceRemaining'] < 0)
 {
     error(400, 'Distance remaining must be above 0');
@@ -29,7 +29,6 @@ require_once('../core/common/ACARSData.class.php');
 $flightUpdate = ACARSData::UpdateFlightData($pilotID, array(
     'pilotid' => $pilotID,
     'flightnum' => $flightDetails['code'] . $flightDetails['flightnum'],
-    'aircraft' => $flightDetails['aircraft'],
     'lat' => $_POST['latitude'],
     'lng' => $_POST['longitude'],
     'heading' => $_POST['heading'],
@@ -41,8 +40,8 @@ $flightUpdate = ACARSData::UpdateFlightData($pilotID, array(
     'arrtime' => $flightDetails['arrtime'],
     'route' => implode(' ', $_POST['route']),
     'distremain' => $_POST['distanceRemaining'],
-    'timeremaining' => sprintf('%02d:%02d', floor($_POST['timeRemaining'] / 60), round(($_POST['timeRemaining']) * 60)),
-    'phasedetail' => $_POST['phase'],
+    'timeremaining' => sprintf('%01d:%02d', floor($_POST['timeRemaining']), round($_POST['timeRemaining'] * 60) % 60),
+    'phasedetail' => ucfirst(strtolower(str_replace("_", " ", $_POST['phase']))),
     'online' => $_POST['network'],
     'client' => 'smartCARS 3'
 ));

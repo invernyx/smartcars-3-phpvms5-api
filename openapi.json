@@ -1,7 +1,7 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "version": "0.3.4",
+        "version": "0.3.5",
         "title": "smartCARS 3 Public API"
     },
     "paths": {
@@ -470,7 +470,8 @@
                                     "timeRemaining",
                                     "route",
                                     "phase",
-                                    "network"
+                                    "network",
+                                    "aircraft"
                                 ],
                                 "properties": {
                                     "bidID": {
@@ -537,6 +538,9 @@
                                     "network": {
                                         "type": "string",
                                         "pattern": "^Offline|VATSIM|PilotEdge|IVAO|POSCON$"
+                                    },
+                                    "aircraft": {
+                                        "type": "integer"
                                     },
                                     "uuid": {
                                         "type": "string"
@@ -677,6 +681,75 @@
                 }
             }
         },
+        "/flights/cancel": {
+            "post": {
+                "summary": "Cancel Flight",
+                "description": "Cancel an ongoing flight",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "bidID"
+                                ],
+                                "properties": {
+                                    "bidID": {
+                                        "oneOf": [
+                                            {
+                                                "type": "integer",
+                                                "format": "int32"
+                                            },
+                                            {
+                                                "type": "string"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "200 - The flight was cancelled"
+                    },
+                    "401": {
+                        "description": "401 - Invalid session",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/UnauthorizedError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "404 - Flight not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "405 - The POST method was not used",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/flights/complete": {
             "post": {
                 "summary": "Complete Flight",
@@ -735,16 +808,12 @@
                                         }
                                     },
                                     "flightLog": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        }
+                                        "type": "string",
+                                        "format": "base64"
                                     },
                                     "flightData": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object"
-                                        }
+                                        "type": "string",
+                                        "format": "base64"
                                     },
                                     "comments": {
                                         "type": "string"
