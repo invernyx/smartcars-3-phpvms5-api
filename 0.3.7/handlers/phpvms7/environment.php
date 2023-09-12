@@ -1,8 +1,8 @@
 <?php
-// smartCARS 0.3.6 API
+// smartCARS 0.3.7 API
 // phpVMS v7 handler
 // Designed to be run on PHP 7+
-$envFilepath = __DIR__ . "/../../../../../.env";
+$envFilepath = __DIR__ . '/../../../../../.env';
 
 if (is_file($envFilepath)) {
     $file = new \SplFileObject($envFilepath);
@@ -27,7 +27,7 @@ if (is_file($envFilepath)) {
         putenv($key . '=' . $value);
     }
 } else {
-    echo "No .env file found";
+    echo 'No .env file found';
 }
 
 define('webRoot', dirname(dirname(getcwd())));
