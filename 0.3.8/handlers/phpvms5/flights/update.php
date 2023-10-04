@@ -29,6 +29,7 @@ require_once('../core/common/ACARSData.class.php');
 $flightUpdate = ACARSData::UpdateFlightData($pilotID, array(
     'pilotid' => $pilotID,
     'flightnum' => $flightDetails['code'] . $flightDetails['flightnum'],
+    'aircraft' => $flightDetails['aircraft'],
     'lat' => $_POST['latitude'],
     'lng' => $_POST['longitude'],
     'heading' => $_POST['heading'],
