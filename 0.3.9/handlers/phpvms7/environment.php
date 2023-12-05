@@ -1,5 +1,5 @@
 <?php
-// smartCARS 0.3.8 API
+// smartCARS 0.3.9 API
 // phpVMS v7 handler
 // Designed to be run on PHP 7+
 $envFilepath = __DIR__ . '/../../../../../.env';
