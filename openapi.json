@@ -1,7 +1,7 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "version": "0.3.8",
+        "version": "0.4.4",
         "title": "smartCARS 3 Public API"
     },
     "paths": {
