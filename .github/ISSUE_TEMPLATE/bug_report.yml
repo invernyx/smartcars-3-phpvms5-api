@@ -70,13 +70,6 @@ body:
       placeholder: "Chrome 96.0.4664.110"
     validations:
       required: true
-  - type: input
-    attributes:
-      label: Handler
-      description: List what intergration you are using
-      placeholder: "phpvms5"
-    validations:
-      required: true
   - type: textarea
     attributes:
       label: Additional context
