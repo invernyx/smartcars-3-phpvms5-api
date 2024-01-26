@@ -1071,7 +1071,7 @@
                         }
                     },
                     "401": {
-                        "description": "401 - The incorrect password was given",
+                        "description": "401 - The incorrect username or password was given",
                         "content": {
                             "application/json": {
                                 "schema": {
