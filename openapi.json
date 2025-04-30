@@ -2005,7 +2005,10 @@
                                 "format": "int32",
                                 "minimum": 0
                             }
-                        }
+                        },
+                        "required": [
+                            "bidID"
+                        ]
                     }
                 ]
             },
