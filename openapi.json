@@ -122,7 +122,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/Flight"
+                                        "$ref": "#/components/schemas/SearchFlight"
                                     }
                                 }
                             }
@@ -521,7 +521,7 @@
                                     "type": "array",
                                     "items": {
                                         "type": "object",
-                                        "$ref": "#/components/schemas/Flight",
+                                        "$ref": "#/components/schemas/BidFlight",
                                         "nullable": true
                                     }
                                 }
@@ -1873,10 +1873,9 @@
                     }
                 }
             },
-            "Flight": {
+            "BaseFlight": {
                 "type": "object",
                 "required": [
-                    "id",
                     "code",
                     "number",
                     "type",
@@ -1890,11 +1889,6 @@
                     "flightTime"
                 ],
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int32",
-                        "minimum": 0
-                    },
                     "code": {
                         "type": "string",
                         "pattern": "^[A-Z]{3}$"
@@ -1977,6 +1971,46 @@
                         "type": "string"
                     }
                 }
+            },
+            "SearchFlight": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/BaseFlight"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "format": "int32",
+                                "minimum": 0
+                            }
+                        },
+                        "required": [
+                            "id"
+                        ]
+                    }
+                ]
+            },
+            "BidFlight": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/BaseFlight"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "bidID": {
+                                "type": "integer",
+                                "format": "int32",
+                                "minimum": 0
+                            }
+                        },
+                        "required": [
+                            "bidID"
+                        ]
+                    }
+                ]
             },
             "Pilot": {
                 "type": "object",
