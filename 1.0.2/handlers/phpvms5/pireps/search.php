@@ -82,15 +82,16 @@ foreach($results as $index=>$result)
 {
     // Correct datetime to digit
     $ft = (string)$result['flightTime'];
-// if no decimal add ".00"
+    $ft = str_replace(':', '.', trim($ft));
+    // if no decimal add ".00"
     if (!str_contains($ft, '.')) {
         $ft .= '.00';
     }
-// Split
+    // Split
     list($hours, $minutesRaw) = explode('.', $ft);
-// calculate Minutes
+    // calculate Minutes
     $minutes = floatval(round($minutesRaw / 60, 2));
-// save result
+    // save result
     $results[$index]['flightTime'] = intval($hours) + $minutes;
     
     // Correct submission date format
