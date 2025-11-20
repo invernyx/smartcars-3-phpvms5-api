@@ -9,10 +9,10 @@ assertData($_POST, array('bidID'=>'int'));
 $bid = $database->fetch('SELECT routeid FROM ' . dbPrefix . 'bids WHERE pilotid=? AND bidid=?', array($pilotID, $_POST['bidID']));
 if($bid !== array())
 {
-    $flight = $database->fetch('SELECT id FROM ' . dbPrefix . 'schedules WHERE id=? AND enabled=0 AND notes="smartCARS Charter Flight"', array($bid['routeid']));
+    $flight = $database->fetch('SELECT id FROM ' . dbPrefix . 'schedules WHERE id=? AND enabled=0 AND notes="smartCARS Charter Flight"', array($bid[0]['routeid']));
     if($flight !== array())
     {
-        $database->execute('DELETE FROM ' . dbPrefix . 'schedules WHERE id=?', array($flight['id']));
+        $database->execute('DELETE FROM ' . dbPrefix . 'schedules WHERE id=?', array($flight[0]['id']));
     }
     $database->execute('DELETE FROM ' . dbPrefix . 'bids WHERE pilotid=? AND bidid=?', array($pilotID, $_POST['bidID']));
     $database->execute('DELETE FROM smartCARS3_BidAircraft WHERE bidid=?', array($_POST['bidID']));
