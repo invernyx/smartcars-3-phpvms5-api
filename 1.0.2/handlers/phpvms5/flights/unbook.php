@@ -9,7 +9,7 @@ assertData($_POST, array('bidID'=>'int'));
 $bid = $database->fetch('SELECT routeid FROM ' . dbPrefix . 'bids WHERE pilotid=? AND bidid=?', array($pilotID, $_POST['bidID']));
 if($bid !== array())
 {
-    $flight = $database->fetch('SELECT id FROM ' . dbPrefix . 'schedules WHERE id=? AND enabled=0 AND notes="smartCARS Charter Flight"');
+    $flight = $database->fetch('SELECT id FROM ' . dbPrefix . 'schedules WHERE id=? AND enabled=0 AND notes="smartCARS Charter Flight"', array($bid['routeid']));
     if($flight !== array())
     {
         $database->execute('DELETE FROM ' . dbPrefix . 'schedules WHERE id=?', array($flight['id']));
