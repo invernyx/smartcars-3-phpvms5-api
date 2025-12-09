@@ -85,9 +85,19 @@ switch($_POST['type']) {
         break;
 }
 
-$duration = abs(strtotime($_POST['arrivalTime']) - strtotime($_POST['departureTime'])) / 3600;
+$depTime = strtotime($_POST['departureTime']);
+$arrTime = strtotime($_POST['arrivalTime']);
+
+// If arrival is earlier than departure, assume it's the next day
+// and add 24 hours (86400 seconds) to the arrival timestamp.
+if ($arrTime < $depTime) {
+    $arrTime += 86400;
+}
+
+$duration = ($arrTime - $depTime) / 3600;
+
 $hours = floor($duration);
-$minutes = ($duration - $hours) * (3 / 5);
+$minutes = ($duration - $hours) * 0.6;
 
 $database->execute('INSERT INTO ' . dbPrefix . 'schedules
 (code,
