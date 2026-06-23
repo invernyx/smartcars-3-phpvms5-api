@@ -19,35 +19,41 @@ landingrate as landingRate,
 fuelused as fuelUsed FROM ' . dbPrefix . 'pireps WHERE pilotid=:pilotid';
 $parameters = array(':pilotid' => $pilotID);
 
-if($_GET['departureAirport'] !== null)
-{
-    assertData($_GET, array('departureAirport' => 'airport'));
+$departureAirport = $_GET['departureAirport'] ?? null;
+$arrivalAirport   = $_GET['arrivalAirport']   ?? null;
+$startDate        = $_GET['startDate']        ?? null;
+$endDate          = $_GET['endDate']          ?? null;
+$status           = $_GET['status']           ?? null;
+$aircraftFilter   = $_GET['aircraft']         ?? null;
+
+if ($departureAirport !== null && $departureAirport !== '') {
+    assertData(['departureAirport' => $departureAirport], ['departureAirport' => 'airport']);
     $query .= ' AND depicao = :departureAirport';
-    $parameters[':departureAirport'] = $_GET['departureAirport'];
+    $parameters[':departureAirport'] = $departureAirport;
 }
-if($_GET['arrivalAirport'] !== null)
-{
-    assertData($_GET, array('arrivalAirport' => 'airport'));
+
+if ($arrivalAirport !== null && $arrivalAirport !== '') {
+    assertData(['arrivalAirport' => $arrivalAirport], ['arrivalAirport' => 'airport']);
     $query .= ' AND arricao = :arrivalAirport';
-    $parameters[':arrivalAirport'] = $_GET['arrivalAirport'];
+    $parameters[':arrivalAirport'] = $arrivalAirport;
 }
-if($_GET['startDate'] !== null)
-{
-    assertData($_GET, array('startDate' => 'date'));
+
+if ($startDate !== null && $startDate !== '') {
+    assertData(['startDate' => $startDate], ['startDate' => 'date']);
     $query .= ' AND submitdate >= :startDate';
-    $parameters[':startDate'] = $_GET['startDate'];
+    $parameters[':startDate'] = $startDate;
 }
-if($_GET['endDate'] !== null)
-{
-    assertData($_GET, array('endDate' => 'date'));
+
+if ($endDate !== null && $endDate !== '') {
+    assertData(['endDate' => $endDate], ['endDate' => 'date']);
     $query .= ' AND submitdate <= DATE_ADD(:endDate, INTERVAL 1 DAY)';
-    $parameters[':endDate'] = $_GET['endDate'];
+    $parameters[':endDate'] = $endDate;
 }
-if($_GET['status'] !== null)
-{
-    assertData($_GET, array('status' => 'status'));
+
+if ($status !== null && $status !== '') {
+    assertData(['status' => $status], ['status' => 'status']);
     $query .= ' AND accepted = :status';
-    switch (strtolower($_GET['status'])) {
+    switch (strtolower($status)) {
         case 'accepted':
             $parameters[':status'] = 1;
             break;
@@ -57,23 +63,36 @@ if($_GET['status'] !== null)
         case 'rejected':
             $parameters[':status'] = 2;
             break;
+        default:
+            error(400, 'Invalid status value');
     }
 }
-if($_GET['aircraft'] !== null)
-{
-    assertData($_GET, array('aircraft' => 'int'));
+
+if ($aircraftFilter !== null && $aircraftFilter !== '') {
+    assertData(['aircraft' => $aircraftFilter], ['aircraft' => 'int']);
     $query .= ' AND aircraft = :aircraft';
-    $parameters[':aircraft'] = $_GET['aircraft'];
+    $parameters[':aircraft'] = $aircraftFilter;
 }
+
 $query .= ' ORDER BY submitdate DESC LIMIT 100';
 
 $results = $database->fetch($query, $parameters);
 foreach($results as $index=>$result)
 {
     // Correct datetime to digit
-    $flightTime = explode('.', $result['flightTime']);
-    $flightTime = intval($flightTime[0]) + floatval(round($flightTime[1] / 60, 2));
-    $results[$index]['flightTime'] = $flightTime;
+    $ft = (string)$result['flightTime'];
+    $ft = str_replace(':', '.', trim($ft));
+    // if no decimal add ".00"
+    if (!str_contains($ft, '.')) {
+        $ft .= '.00';
+    }
+    // Split
+    list($hours, $minutesRaw) = explode('.', $ft);
+    // calculate Minutes
+    $minutes = floatval(round($minutesRaw / 60, 2));
+    // save result
+    $results[$index]['flightTime'] = intval($hours) + $minutes;
+    
     // Correct submission date format
     $results[$index]['submitDate'] = date(DATE_RFC3339, strtotime($result['submitDate']));
 

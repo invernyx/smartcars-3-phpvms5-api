@@ -44,7 +44,7 @@ if(count($validSessions) === 0)
 {
     error(401, 'The session given was not valid');
 }
-$result = $database->fetch('SELECT code, pilotid, firstname, lastname, email, rankid FROM ' . dbPrefix . 'pilots WHERE pilotid=?', array($session[1]['sub']));
+$result = $database->fetch('SELECT code, pilotid, firstname, lastname, email, rankid, ranklevel FROM ' . dbPrefix . 'pilots WHERE pilotid=?', array($session[1]['sub']));
 if($result === array())
 {
     error(500, 'The session was found, but there was no valid pilot. Please report this to the VA');

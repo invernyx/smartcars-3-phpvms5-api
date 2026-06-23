@@ -18,7 +18,7 @@ notes FROM ' . dbPrefix . 'schedules';
 $whereInQuery = false;
 $parameters = array();
 
-if($_GET['departureAirport'] !== null)
+if(!empty($_GET['departureAirport']))
 {
     assertData($_GET, array('departureAirport' => 'airport'));
     if(!$whereInQuery)
@@ -29,7 +29,7 @@ if($_GET['departureAirport'] !== null)
     $query .= 'depicao = :departureAirport';
     $parameters[':departureAirport'] = $_GET['departureAirport'];
 }
-if($_GET['arrivalAirport'] !== null)
+if(!empty($_GET['arrivalAirport']))
 {
     assertData($_GET, array('arrivalAirport' => 'airport'));
     if(!$whereInQuery)
@@ -44,7 +44,7 @@ if($_GET['arrivalAirport'] !== null)
     $query .= 'arricao = :arrivalAirport';
     $parameters[':arrivalAirport'] = $_GET['arrivalAirport'];
 }
-if($_GET['aircraft'] !== null)
+if(!empty($_GET['aircraft']))
 {
     assertData($_GET, array('aircraft' => 'int'));
     if(!$whereInQuery)
@@ -59,7 +59,7 @@ if($_GET['aircraft'] !== null)
     $query .= 'aircraft IN (SELECT id FROM ' . dbPrefix . 'aircraft WHERE name LIKE (SELECT NAME from ' . dbPrefix . 'aircraft WHERE id = :aircraft))';
     $parameters[':aircraft'] = $_GET['aircraft'];
 }
-if($_GET['callsign'] !== null)
+if(!empty($_GET['callsign']))
 {
     assertData($_GET, array('callsign' => 'string'));
     if(!$whereInQuery)
@@ -74,7 +74,7 @@ if($_GET['callsign'] !== null)
     $query .= 'id IN (SELECT id FROM ' . dbPrefix . 'schedules WHERE CONCAT(code, flightnum) LIKE :callsign)';
     $parameters[':callsign'] = '%' . $_GET['callsign'] . '%';
 }
-if($_GET['minimumFlightTime'] !== null)
+if(!empty($_GET['minimumFlightTime']))
 {
     assertData($_GET, array('minimumFlightTime' => 'float'));
     if(!$whereInQuery)
@@ -89,7 +89,7 @@ if($_GET['minimumFlightTime'] !== null)
     $query .= 'CAST(flighttime AS DECIMAL(4,2)) >= :minimumFlightTime';
     $parameters[':minimumFlightTime'] = $_GET['minimumFlightTime'];
 }
-if($_GET['maximumFlightTime'] !== null)
+if(!empty($_GET['maximumFlightTime']))
 {
     assertData($_GET, array('maximumFlightTime' => 'float'));
     if(!$whereInQuery)
@@ -104,7 +104,7 @@ if($_GET['maximumFlightTime'] !== null)
     $query .= 'CAST(flighttime AS DECIMAL(4,2)) <= :maximumFlightTime';
     $parameters[':maximumFlightTime'] = $_GET['maximumFlightTime'];
 }
-if($_GET['minimumDistance'] !== null)
+if(!empty($_GET['minimumDistance']))
 {
     assertData($_GET, array('minimumDistance' => 'float'));
     if(!$whereInQuery)
@@ -119,7 +119,7 @@ if($_GET['minimumDistance'] !== null)
     $query .= 'distance >= :minimumDistance';
     $parameters[':minimumDistance'] = $_GET['minimumDistance'];
 }
-if($_GET['maximumDistance'] !== null)
+if(!empty($_GET['maximumDistance']))
 {
     assertData($_GET, array('maximumDistance' => 'float'));
     if(!$whereInQuery)
@@ -145,7 +145,7 @@ else
 }
 
 $limit = 100;
-if ($_GET['limit'] !== null) {
+if (!empty($_GET['limit'])) {
     assertData($_GET, array('limit' => 'int'));
     $limit = intval($_GET['limit']);
     $limit = $limit > 100 ? 100 : $limit;

@@ -27,11 +27,11 @@ assertData($_POST, array('password' => 'string'));
 
 if(strpos($_GET['username'], '@'))
 {
-    $result = $database->fetch('SELECT code, pilotid, firstname, lastname, email, rankid, retired, confirmed, password, salt FROM ' . dbPrefix . 'pilots WHERE email=?', array($_GET['username']));
+    $result = $database->fetch('SELECT code, pilotid, firstname, lastname, email, rankid, ranklevel, retired, confirmed, password, salt FROM ' . dbPrefix . 'pilots WHERE email=?', array($_GET['username']));
 }
 else
 {
-    $result = $database->fetch('SELECT code, pilotid, firstname, lastname, email, rankid, retired, confirmed, password, salt FROM ' . dbPrefix . 'pilots WHERE pilotid=?', array($_GET['username']));
+    $result = $database->fetch('SELECT code, pilotid, firstname, lastname, email, rankid, ranklevel, retired, confirmed, password, salt FROM ' . dbPrefix . 'pilots WHERE pilotid=?', array($_GET['username']));
 }
 
 if($result === array())
