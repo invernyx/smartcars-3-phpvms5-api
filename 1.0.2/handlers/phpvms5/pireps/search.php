@@ -27,7 +27,6 @@ $status           = $_GET['status']           ?? null;
 $aircraftFilter   = $_GET['aircraft']         ?? null;
 
 if ($departureAirport !== null && $departureAirport !== '') {
-    // hier lieber mit einem eigenen Array prüfen, nicht mit ganz $_GET
     assertData(['departureAirport' => $departureAirport], ['departureAirport' => 'airport']);
     $query .= ' AND depicao = :departureAirport';
     $parameters[':departureAirport'] = $departureAirport;
